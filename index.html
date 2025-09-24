@@ -6,22 +6,54 @@
 <title>Emoticons Ultra</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  body { font-family: 'Inter', sans-serif; margin:0; padding:0; background: linear-gradient(135deg,#fef9f0,#f3f4f6); transition: background 0.3s;}
-  body.dark { background: linear-gradient(135deg,#1f2937,#111827); color:#f3f4f6;}
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    padding: 0;
+    transition: background 0.3s, color 0.3s;
+    background: linear-gradient(135deg,#fef9f0,#f3f4f6);
+    color: #111;
+  }
+  body.dark {
+    background: linear-gradient(135deg,#1f2937,#111827);
+    color: #f3f4f6;
+  }
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  }
+  .kaomoji-item {
+    transition: all 0.15s;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+  }
+  .kaomoji-item:hover {
+    transform: scale(1.1);
+    background-color: #e5e7eb;
+  }
+  body.dark .kaomoji-item:hover { background-color: #374151; }
+  .btn { transition: all 0.2s; cursor:pointer; }
+  .btn:hover { transform: translateY(-2px); }
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  .kaomoji-item:hover { transform: scale(1.1); background-color: #e5e7eb; transition: all 0.15s; cursor:pointer;}
-  body.dark .kaomoji-item:hover { background-color: #374151; }
-  .card { transition: transform 0.2s, box-shadow 0.2s; }
-  .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
-  .btn { transition: all 0.2s; }
-  .btn:hover { transform: translateY(-2px); }
+  select, input {
+    transition: background 0.3s, color 0.3s;
+  }
+  body.dark select, body.dark input {
+    background-color: #374151;
+    color: #f3f4f6;
+    border-color: #4b5563;
+  }
 </style>
 </head>
 <body class="flex flex-col items-center p-4 gap-6">
 
-<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-gray-100 text-center">Emoticons Ultra</h1>
-<p class="text-gray-600 dark:text-gray-300 max-w-xl text-center">
+<h1 class="text-4xl md:text-5xl font-extrabold text-center">Emoticons Ultra</h1>
+<p class="max-w-xl text-center text-gray-700 dark:text-gray-300">
 Create full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
 </p>
 
@@ -30,7 +62,7 @@ Create full kaomojis, single symbols, or bulk lists. Select parts, generate rand
 <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
 
   <!-- Output -->
-  <div id="output" class="text-6xl md:text-8xl font-bold text-gray-700 dark:text-gray-200 text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(☉‿☉)</div>
+  <div id="output" class="text-6xl md:text-8xl font-bold text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(☉‿☉)</div>
 
   <!-- Single Symbol Toggle -->
   <div class="flex items-center justify-center gap-3 mb-4">
@@ -57,7 +89,7 @@ Create full kaomojis, single symbols, or bulk lists. Select parts, generate rand
 
   <!-- Bulk generator -->
   <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
-    <input type="number" id="bulkCount" value="50" min="1" max="1000" class="p-2 border rounded-lg text-center w-32">
+    <input type="number" id="bulkCount" value="50" min="1" max="500" class="p-2 border rounded-lg text-center w-32">
     <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-xl btn">Generate Bulk</button>
     <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Copy All</button>
   </div>
@@ -68,21 +100,22 @@ Create full kaomojis, single symbols, or bulk lists. Select parts, generate rand
 </div>
 
 <script>
-// ------------------- DARK MODE -------------------
+// --------------- DARK MODE ---------------
 function toggleDark(){document.body.classList.toggle('dark');}
 
-// ------------------- PARTS -------------------
-const leftArms = ["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽"];
-const rightArms = ["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)", "(*",")⌒",")╮","༽","༼"];
-const eyesList = ["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼"];
-const mouths = ["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~"];
-const cheeks = ["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~"];
-const extras = ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪","✦","✩"];
+// --------------- PARTS ---------------
+// Expanded kaomojis
+const leftArms = ["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽","┏(","┗(","ᕦ(","ᕤ(","⊂(","⊃(","ლ(","༺"];
+const rightArms = ["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)","(*",")⌒",")╮","༽","༼","┛)","ᕥ)","ᕠ)","⊂)","⊃)","ლ)","༻"];
+const eyesList = ["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼","□","∩","∇","●","∂"];
+const mouths = ["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~","︶","ᄽ"];
+const cheeks = ["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~","ღ","❁"];
+const extras = ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪","✦","✩","✰","ღ","⚡","✷","✸","✹"];
 
-// ------------------- RANDOM -------------------
+// --------------- RANDOM ---------------
 function getRandom(list){return list[Math.floor(Math.random()*list.length)];}
 
-// ------------------- GENERATE -------------------
+// --------------- GENERATE ---------------
 function generateKaomojiString(random=false){
   const singleMode=document.getElementById("singleSymbolMode").checked;
   if(singleMode) return random?getRandom(extras):document.getElementById("extra").value||" ";
@@ -101,12 +134,13 @@ function generateKaomoji(){document.getElementById("output").textContent=generat
 function surpriseMe(){document.getElementById("output").textContent=generateKaomojiString(true);}
 function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent);}
 function generateBulkKaomoji(){
-  const count=parseInt(document.getElementById("bulkCount").value);
+  const count=Math.min(parseInt(document.getElementById("bulkCount").value),500);
   const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
   for(let i=0;i<count;i++){
     const k=generateKaomojiString(true);
-    const span=document.createElement("span"); span.textContent=k;
-    span.className="kaomoji-item p-1 rounded-md";
+    const span=document.createElement("span"); 
+    span.textContent=k;
+    span.className="kaomoji-item";
     span.onclick=()=>{document.getElementById("output").textContent=k;};
     bulkDiv.appendChild(span);
   }
@@ -116,7 +150,7 @@ function copyAllKaomoji(){
   navigator.clipboard.writeText(all);
 }
 
-// ------------------- INIT SELECTS -------------------
+// --------------- INIT SELECTS ---------------
 function fillSelect(id,list,defaultValue=""){
   const sel=document.getElementById(id); sel.innerHTML="";
   list.forEach(item=>{
