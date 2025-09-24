@@ -3,145 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kaomoji Master ✨</title>
+<title>Emoticons Ultra</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-    body {
-        font-family: 'Inter', sans-serif;
-        margin: 0; padding: 0;
-        transition: background 0.3s, color 0.3s;
-        background: linear-gradient(135deg, #f0f4f8, #c1c1c1);
-        color: #111;
-    }
-    body.dark { background: linear-gradient(135deg, #1f2937, #111827); color: #f3f4f6; }
-    .kaomoji-output {
-        font-size: 5rem; text-align: center; padding: 2rem;
-        border-radius: 2rem; background: #e5e7eb; color: #111;
-        min-height: 8rem; display: flex; align-items: center; justify-content: center;
-        transition: all 0.2s;
-    }
-    body.dark .kaomoji-output { background: #374151; color: #f3f4f6; }
-    .kaomoji-output.bounce { animation: bounce 0.3s ease; }
-    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-    .symbol-palette-item { cursor: pointer; padding: 0.5rem; margin:0.25rem; border-radius:0.5rem; display:inline-block; transition: all 0.1s; font-size:1.5rem; }
-    .symbol-palette-item:hover { background: #e5e7eb; transform: scale(1.2); }
-    body.dark .symbol-palette-item:hover { background: #374151; }
-    .btn { cursor:pointer; transition: all 0.2s; }
-    .btn:hover { transform: translateY(-2px); }
+  body { font-family: 'Inter', sans-serif; margin:0; padding:0; background: linear-gradient(135deg,#fef9f0,#f3f4f6); transition: background 0.3s;}
+  body.dark { background: linear-gradient(135deg,#1f2937,#111827); color:#f3f4f6;}
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .kaomoji-item:hover { transform: scale(1.1); background-color: #e5e7eb; transition: all 0.15s; cursor:pointer;}
+  body.dark .kaomoji-item:hover { background-color: #374151; }
+  .card { transition: transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
+  .btn { transition: all 0.2s; }
+  .btn:hover { transform: translateY(-2px); }
 </style>
 </head>
-<body class="flex flex-col items-center p-4 gap-6 min-h-screen">
+<body class="flex flex-col items-center p-4 gap-6">
 
-<h1 class="text-4xl md:text-5xl font-extrabold text-center">Kaomoji Master ✨</h1>
-<p class="max-w-xl text-center text-gray-700 dark:text-gray-300">
-Live-edit, drag & drop, favorite, and bulk-generate kaomojis!
+<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 dark:text-gray-100 text-center">Emoticons Ultra</h1>
+<p class="text-gray-600 dark:text-gray-300 max-w-xl text-center">
+Create full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
 </p>
 
-<div class="kaomoji-output" id="output">(◕‿◕✿)</div>
+<button onclick="toggleDark()" class="px-4 py-2 bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white rounded-xl mb-2 btn">Toggle Dark Mode</button>
 
-<!-- Kaomoji Parts -->
-<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 w-full max-w-5xl">
-    <select id="ears" class="p-2 border rounded-lg"></select>
-    <select id="leftArm" class="p-2 border rounded-lg"></select>
-    <select id="eyes" class="p-2 border rounded-lg"></select>
-    <select id="cheeks" class="p-2 border rounded-lg"></select>
-    <select id="mouth" class="p-2 border rounded-lg"></select>
-    <select id="rightArm" class="p-2 border rounded-lg"></select>
-    <select id="extras" class="p-2 border rounded-lg"></select>
+<div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
+
+  <!-- Output -->
+  <div id="output" class="text-6xl md:text-8xl font-bold text-gray-700 dark:text-gray-200 text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(☉‿☉)</div>
+
+  <!-- Single Symbol Toggle -->
+  <div class="flex items-center justify-center gap-3 mb-4">
+    <input type="checkbox" id="singleSymbolMode" class="w-5 h-5">
+    <label for="singleSymbolMode" class="font-semibold text-gray-700 dark:text-gray-300">Single Symbol Mode (Extra Only)</label>
+  </div>
+
+  <!-- Part Selectors Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div><label class="block font-semibold mb-1">Left Arm</label><select id="leftArm" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Eyes</label><select id="eyes" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Mouth</label><select id="mouth" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Cheeks</label><select id="cheeks" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Right Arm</label><select id="rightArm" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Extra (Stars/Hearts/etc.)</label><select id="extra" class="w-full p-2 border rounded-lg"></select></div>
+  </div>
+
+  <!-- Buttons -->
+  <div class="flex flex-wrap gap-4 justify-center mt-4">
+    <button onclick="generateKaomoji()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl btn">Generate</button>
+    <button onclick="surpriseMe()" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl btn">Surprise Me!</button>
+    <button onclick="copyKaomoji()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl btn">Copy</button>
+  </div>
+
+  <!-- Bulk generator -->
+  <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
+    <input type="number" id="bulkCount" value="50" min="1" max="1000" class="p-2 border rounded-lg text-center w-32">
+    <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-xl btn">Generate Bulk</button>
+    <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Copy All</button>
+  </div>
+
+  <!-- Bulk output -->
+  <div id="bulkOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
+
 </div>
-
-<!-- Buttons -->
-<div class="flex flex-wrap gap-4 justify-center mt-4">
-    <button id="randomBtn" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl btn">Random</button>
-    <button id="copyBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl btn">Copy</button>
-    <button id="undoBtn" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Undo</button>
-    <button id="redoBtn" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Redo</button>
-</div>
-
-<!-- Symbol Palette -->
-<h2 class="text-2xl font-bold mt-6 text-center">Symbol Palette</h2>
-<div class="flex flex-wrap justify-center gap-2" id="palette"></div>
 
 <script>
-const kaomojiParts = {
-    ears: ["","(","（","[","｛","<","{","ʕ","ヾ"],
-    leftArm: ["","╰(","(づ","(っ","(ﾉ","ヽ("],
-    eyes: ["","^","°","•","⊙","♥","☆","◕","o"],
-    cheeks: ["","///","｀","´","♥","✿"],
-    mouth: ["","_","o","ω","﹏","‿","△"],
-    rightArm: ["",")","）",")╯",")づ",")っ"],
-    extras: ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆"]
-};
+// ------------------- DARK MODE -------------------
+function toggleDark(){document.body.classList.toggle('dark');}
 
-// Elements
-const output = document.getElementById('output');
-const selects = ["ears","leftArm","eyes","cheeks","mouth","rightArm","extras"].map(id=>document.getElementById(id));
-const palette = document.getElementById('palette');
-let history = []; let historyPos = -1;
+// ------------------- PARTS -------------------
+const leftArms = ["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽"];
+const rightArms = ["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)", "(*",")⌒",")╮","༽","༼"];
+const eyesList = ["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼"];
+const mouths = ["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~"];
+const cheeks = ["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~"];
+const extras = ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪","✦","✩"];
 
-// Fill selects
-selects.forEach((sel,i)=>{
-    const part = Object.values(kaomojiParts)[i];
-    part.forEach(s => {
-        const opt = document.createElement('option');
-        opt.value = s; opt.textContent = s||"None"; sel.appendChild(opt);
-    });
-    sel.addEventListener('change', renderKaomoji);
-});
+// ------------------- RANDOM -------------------
+function getRandom(list){return list[Math.floor(Math.random()*list.length)];}
 
-// Render kaomoji
-function renderKaomoji(){
-    const k = selects.map(s=>s.value).join('');
-    output.textContent = k||"(☉‿☉)";
-    saveHistory(output.textContent);
+// ------------------- GENERATE -------------------
+function generateKaomojiString(random=false){
+  const singleMode=document.getElementById("singleSymbolMode").checked;
+  if(singleMode) return random?getRandom(extras):document.getElementById("extra").value||" ";
+  let l=random?getRandom(leftArms):document.getElementById("leftArm").value;
+  let r=random?getRandom(rightArms):document.getElementById("rightArm").value;
+  let e=random?getRandom(eyesList):document.getElementById("eyes").value;
+  let m=random?getRandom(mouths):document.getElementById("mouth").value;
+  let c=random?getRandom(cheeks):document.getElementById("cheeks").value;
+  let ex=random?getRandom(extras):document.getElementById("extra").value;
+  let k="";
+  if(l)k+=l; if(e)k+=e; if(c)k+=c; if(m)k+=m; if(c)k+=c; if(e)k+=e; if(r)k+=r; if(ex)k+=ex;
+  return k||" ";
 }
 
-// Random kaomoji
-document.getElementById('randomBtn').addEventListener('click', ()=>{
-    selects.forEach((sel,i)=>{
-        const part = Object.values(kaomojiParts)[i];
-        sel.value = part[Math.floor(Math.random()*part.length)];
-    });
-    renderKaomoji();
-});
-
-// Copy with animation
-document.getElementById('copyBtn').addEventListener('click', ()=>{
-    navigator.clipboard.writeText(output.textContent);
-    output.classList.add('bounce');
-    setTimeout(()=>output.classList.remove('bounce'),300);
-});
-
-// Undo / Redo
-function saveHistory(k){
-    if(history[historyPos]===k) return;
-    history = history.slice(0,historyPos+1);
-    history.push(k);
-    historyPos = history.length-1;
+function generateKaomoji(){document.getElementById("output").textContent=generateKaomojiString();}
+function surpriseMe(){document.getElementById("output").textContent=generateKaomojiString(true);}
+function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent);}
+function generateBulkKaomoji(){
+  const count=parseInt(document.getElementById("bulkCount").value);
+  const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
+  for(let i=0;i<count;i++){
+    const k=generateKaomojiString(true);
+    const span=document.createElement("span"); span.textContent=k;
+    span.className="kaomoji-item p-1 rounded-md";
+    span.onclick=()=>{document.getElementById("output").textContent=k;};
+    bulkDiv.appendChild(span);
+  }
 }
-document.getElementById('undoBtn').addEventListener('click', ()=>{
-    if(historyPos>0){ historyPos--; output.textContent = history[historyPos]; }
-});
-document.getElementById('redoBtn').addEventListener('click', ()=>{
-    if(historyPos<history.length-1){ historyPos++; output.textContent = history[historyPos]; }
-});
+function copyAllKaomoji(){
+  const all=Array.from(document.getElementById("bulkOutput").children).map(c=>c.textContent).join("\n");
+  navigator.clipboard.writeText(all);
+}
 
-// Render palette
-const allSymbols = [...new Set([].concat(...Object.values(kaomojiParts).map(arr=>arr.filter(s=>s))) )].sort();
-allSymbols.forEach(s=>{
-    const span = document.createElement('span');
-    span.textContent = s; span.className="symbol-palette-item";
-    span.draggable = true;
-    span.addEventListener('click', ()=>{ output.textContent+=s; saveHistory(output.textContent); });
-    span.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain',s); });
-    output.addEventListener('dragover', e=>{ e.preventDefault(); });
-    output.addEventListener('drop', e=>{ e.preventDefault(); const sym = e.dataTransfer.getData('text/plain'); output.textContent += sym; saveHistory(output.textContent); });
-    palette.appendChild(span);
-});
+// ------------------- INIT SELECTS -------------------
+function fillSelect(id,list,defaultValue=""){
+  const sel=document.getElementById(id); sel.innerHTML="";
+  list.forEach(item=>{
+    const opt=document.createElement("option");
+    opt.value=item; opt.textContent=item||"None";
+    sel.appendChild(opt);
+  });
+  if(defaultValue) sel.value=defaultValue;
+}
 
-// Initial render
-renderKaomoji();
+fillSelect("leftArm", leftArms); fillSelect("rightArm", rightArms);
+fillSelect("eyes", eyesList,"☉"); fillSelect("mouth", mouths,"‿");
+fillSelect("cheeks", cheeks); fillSelect("extra", extras);
+
+generateKaomoji();
 </script>
 </body>
 </html>
