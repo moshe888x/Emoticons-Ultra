@@ -3,49 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emoticons Ultra MAX</title>
+<title>Emoticons Ultra</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body { font-family:'Inter',sans-serif; margin:0; padding:0; transition: background 0.3s, color 0.3s;
-       background: linear-gradient(135deg,#fef9f0,#f3f4f6); color:#111; }
-body.dark { background: linear-gradient(135deg,#1f2937,#111827); color:#f3f4f6; }
-.card { transition: transform 0.2s, box-shadow 0.2s; }
-.card:hover { transform: translateY(-5px); box-shadow:0 10px 20px rgba(0,0,0,0.12); }
-.kaomoji-item { cursor:pointer; padding:0.25rem 0.5rem; border-radius:0.5rem; display:inline-block; transition: transform 0.15s, background 0.15s; }
-.kaomoji-item:hover { transform: scale(1.2) rotate(-2deg); background-color:#e5e7eb; }
-body.dark .kaomoji-item:hover { background-color:#374151; }
-.symbol-palette-item { cursor:pointer; padding:0.25rem 0.5rem; border-radius:0.5rem; font-size:1.5rem; transition: transform 0.1s; }
-.symbol-palette-item:hover { transform: scale(1.3); background-color:#e5e7eb; }
-body.dark .symbol-palette-item:hover { background-color:#374151; }
-.copy-message { position: fixed; bottom:2rem; left:50%; transform:translateX(-50%); padding:0.75rem 1.5rem; background-color:#4CAF50; color:white; border-radius:1rem; opacity:0; transition: opacity 0.3s; z-index:50; }
-.copy-message.show { opacity:1; }
-.no-scrollbar::-webkit-scrollbar { display:none; }
-.no-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+  body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#fef9f0,#f3f4f6); margin:0; padding:0; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .kaomoji-item:hover { background-color: #e5e7eb; cursor: pointer; transform: scale(1.1); transition: transform 0.15s; }
+  .card { transition: transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body class="flex flex-col items-center p-6 gap-6">
 
-<h1 class="text-4xl md:text-5xl font-extrabold text-center">Emoticons Ultra MAX</h1>
-<p class="text-gray-700 dark:text-gray-300 max-w-xl text-center">Build kaomojis fast! Random, bulk, copy, favorite, dark mode & drag palette.</p>
+<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 text-center">Emoticons Ultra</h1>
+<p class="text-gray-600 max-w-xl text-center">
+Build full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
+</p>
 
-<div class="flex flex-wrap gap-4 justify-center">
-  <button id="toggleDarkBtn" class="px-4 py-2 bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white rounded-xl">Toggle Dark Mode</button>
-  <div id="copyMessage" class="copy-message">Copied!</div>
-</div>
-
-<div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
+<div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
 
   <!-- Output -->
-  <div id="output" class="text-6xl md:text-8xl font-bold text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(☉‿☉)</div>
+  <div id="output" class="text-6xl md:text-8xl font-bold text-gray-700 text-center p-6 rounded-xl bg-gray-100">(☉‿☉)</div>
 
-  <!-- Part Selectors -->
-  <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+  <!-- Single Symbol Toggle -->
+  <div class="flex items-center justify-center gap-3 mb-4">
+    <input type="checkbox" id="singleSymbolMode" class="w-5 h-5">
+    <label for="singleSymbolMode" class="font-semibold text-gray-700">Single Symbol Mode (Extra Only)</label>
+  </div>
+
+  <!-- Part Selectors Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
     <div><label class="block font-semibold mb-1">Left Arm</label><select id="leftArm" class="w-full p-2 border rounded-lg"></select></div>
     <div><label class="block font-semibold mb-1">Eyes</label><select id="eyes" class="w-full p-2 border rounded-lg"></select></div>
     <div><label class="block font-semibold mb-1">Mouth</label><select id="mouth" class="w-full p-2 border rounded-lg"></select></div>
     <div><label class="block font-semibold mb-1">Cheeks</label><select id="cheeks" class="w-full p-2 border rounded-lg"></select></div>
     <div><label class="block font-semibold mb-1">Right Arm</label><select id="rightArm" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Extra</label><select id="extra" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Extra (Star/Heart/etc.)</label><select id="extra" class="w-full p-2 border rounded-lg"></select></div>
   </div>
 
   <!-- Buttons -->
@@ -63,64 +57,71 @@ body.dark .symbol-palette-item:hover { background-color:#374151; }
   </div>
 
   <!-- Bulk output -->
-  <div id="bulkOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
+  <div id="bulkOutput" class="bg-gray-100 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
 
-  <!-- Symbol Palette -->
-  <div class="mt-8">
-    <h2 class="text-2xl font-bold mb-4 text-center">Kaomoji Parts Palette</h2>
-    <div id="symbolPalette" class="flex flex-wrap gap-2 justify-center"></div>
-  </div>
-
-  <!-- Favorites/History -->
-  <div class="mt-8">
-    <h2 class="text-2xl font-bold mb-4 text-center">Favorites / History</h2>
-    <div id="historyOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-80 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
-  </div>
 </div>
 
 <script>
-const leftArms=["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽"];
-const rightArms=["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)","(*",")⌒",")╮","༽","༼"];
-const eyesList=["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼"];
-const mouths=["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~"];
-const cheeks=["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~"];
-const extras=["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪"];
+const leftArms = ["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽"];
+const rightArms = ["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)", "(*",")⌒",")╮","༽","༼"];
+const eyesList = ["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼"];
+const mouths = ["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~"];
+const cheeks = ["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~"];
+const extras = ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪"];
 
+// Add more kaomojis to lists
+leftArms.push("ᕦ(","ᕤ(","⊂(","⊃(","ლ(");
+rightArms.push("ᕥ)","ᕠ)","⊂)","⊃)","ლ)");
+eyesList.push("◕‿◕","◔‿◔","✧","✿");
+mouths.push("3","ω","v","▽","∇");
+cheeks.push("ღ","❁","✿","°");
+extras.push("❀","✦","✩","✷","✸","✹");
+
+// Helpers
 function getRandom(list){return list[Math.floor(Math.random()*list.length)];}
 
 function generateKaomojiString(random=false){
+  const singleMode=document.getElementById("singleSymbolMode").checked;
+  if(singleMode) return random?getRandom(extras):document.getElementById("extra").value||" ";
   let l=random?getRandom(leftArms):document.getElementById("leftArm").value;
   let r=random?getRandom(rightArms):document.getElementById("rightArm").value;
   let e=random?getRandom(eyesList):document.getElementById("eyes").value;
   let m=random?getRandom(mouths):document.getElementById("mouth").value;
   let c=random?getRandom(cheeks):document.getElementById("cheeks").value;
   let ex=random?getRandom(extras):document.getElementById("extra").value;
-  return `${l}${e}${c}${m}${c}${e}${r}${ex}`||"(☉‿☉)";
+  let k="";
+  if(l)k+=l; if(e)k+=e; if(c)k+=c; if(m)k+=m; if(c)k+=c; if(e)k+=e; if(r)k+=r; if(ex)k+=ex;
+  return k||"(☉‿☉)";
 }
 
 function generateKaomoji(){document.getElementById("output").textContent=generateKaomojiString();}
 function surpriseMe(){document.getElementById("output").textContent=generateKaomojiString(true);}
-function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent); showCopyMessage();}
+function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent);}
 function generateBulkKaomoji(){
-  const count=parseInt(document.getElementById("bulkCount").value); const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
-  for(let i=0;i<count;i++){const k=generateKaomojiString(true); const span=document.createElement("span"); span.textContent=k; span.className="kaomoji-item"; span.onclick=()=>{document.getElementById("output").textContent=k;}; bulkDiv.appendChild(span);}
+  const count=parseInt(document.getElementById("bulkCount").value);
+  const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
+  for(let i=0;i<count;i++){
+    const k=generateKaomojiString(true);
+    const span=document.createElement("span"); span.textContent=k;
+    span.className="kaomoji-item p-1 rounded-md";
+    span.onclick=()=>{document.getElementById("output").textContent=k;};
+    bulkDiv.appendChild(span);
+  }
 }
-function copyAllKaomoji(){const all=Array.from(document.getElementById("bulkOutput").children).map(c=>c.textContent).join("\n"); navigator.clipboard.writeText(all); showCopyMessage();}
+function copyAllKaomoji(){
+  const all=Array.from(document.getElementById("bulkOutput").children).map(c=>c.textContent).join("\n");
+  navigator.clipboard.writeText(all);
+}
 
-function fillSelect(id,list,defaultValue=""){const sel=document.getElementById(id); sel.innerHTML=""; list.forEach(item=>{const opt=document.createElement("option"); opt.value=item; opt.textContent=item||"None"; sel.appendChild(opt);}); if(defaultValue) sel.value=defaultValue;}
-fillSelect("leftArm",leftArms); fillSelect("rightArm",rightArms);
-fillSelect("eyes",eyesList,"☉"); fillSelect("mouth",mouths,"‿");
-fillSelect("cheeks",cheeks); fillSelect("extra",extras);
-
-function renderPalette(){const palette=document.getElementById("symbolPalette"); palette.innerHTML=""; const all=[...leftArms,...rightArms,...eyesList,...mouths,...cheeks,...extras]; const unique=[...new Set(all.filter(s=>s!==""))].sort(); unique.forEach(sym=>{const span=document.createElement("span"); span.textContent=sym; span.className="symbol-palette-item"; span.onclick=()=>{document.getElementById("output").textContent+=sym;}; palette.appendChild(span);});}
-renderPalette();
-
-// Dark mode toggle
-document.getElementById("toggleDarkBtn").onclick=()=>{document.body.classList.toggle("dark");};
-
-// Copy feedback
-const copyMsg=document.getElementById("copyMessage");
-function showCopyMessage(){copyMsg.classList.add("show"); setTimeout(()=>{copyMsg.classList.remove("show");},2000);}
+// Fill selects
+function fillSelect(id,list,defaultValue=""){
+  const sel=document.getElementById(id); sel.innerHTML="";
+  list.forEach(item=>{const opt=document.createElement("option"); opt.value=item; opt.textContent=item||"None"; sel.appendChild(opt);});
+  if(defaultValue) sel.value=defaultValue;
+}
+fillSelect("leftArm", leftArms); fillSelect("rightArm", rightArms);
+fillSelect("eyes", eyesList,"☉"); fillSelect("mouth", mouths,"‿");
+fillSelect("cheeks", cheeks); fillSelect("extra", extras);
 
 generateKaomoji();
 </script>
