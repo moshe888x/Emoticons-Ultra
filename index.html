@@ -1,171 +1,445 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emoticons Ultra</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 0;
-    transition: background 0.3s, color 0.3s;
-    background: linear-gradient(135deg,#fef9f0,#f3f4f6);
-    color: #111;
-  }
-  body.dark {
-    background: linear-gradient(135deg,#1f2937,#111827);
-    color: #f3f4f6;
-  }
-  .card {
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.12);
-  }
-  .kaomoji-item {
-    transition: all 0.15s;
-    cursor: pointer;
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-  }
-  .kaomoji-item:hover {
-    transform: scale(1.1);
-    background-color: #e5e7eb;
-  }
-  body.dark .kaomoji-item:hover { background-color: #374151; }
-  .btn { transition: all 0.2s; cursor:pointer; }
-  .btn:hover { transform: translateY(-2px); }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  select, input {
-    transition: background 0.3s, color 0.3s;
-  }
-  body.dark select, body.dark input {
-    background-color: #374151;
-    color: #f3f4f6;
-    border-color: #4b5563;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoticons Ultra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background 0.3s, color 0.3s;
+            background: linear-gradient(135deg, #f0f4f8, #c1c1c1);
+            color: #111;
+        }
+        body.dark {
+            background: linear-gradient(135deg, #1f2937, #111827);
+            color: #f3f4f6;
+        }
+        .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+        }
+        .kaomoji-item {
+            transition: all 0.15s;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+            word-break: break-word; /* Prevents long kaomojis from overflowing */
+        }
+        .kaomoji-item:hover {
+            transform: scale(1.1);
+            background-color: #e5e7eb;
+        }
+        body.dark .kaomoji-item:hover { background-color: #374151; }
+        .symbol-palette-item {
+            transition: all 0.1s;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+        }
+        .symbol-palette-item:hover {
+            background-color: #e5e7eb;
+        }
+        body.dark .symbol-palette-item:hover {
+            background-color: #374151;
+        }
+        .btn { transition: all 0.2s; cursor:pointer; }
+        .btn:hover { transform: translateY(-2px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        select, input {
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+        body.dark select, body.dark input {
+            background-color: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        .copy-message {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .copy-message.show {
+            opacity: 1;
+        }
+    </style>
 </head>
-<body class="flex flex-col items-center p-4 gap-6">
+<body class="flex flex-col items-center p-4 gap-6 min-h-screen">
 
-<h1 class="text-4xl md:text-5xl font-extrabold text-center">Emoticons Ultra</h1>
-<p class="max-w-xl text-center text-gray-700 dark:text-gray-300">
-Create full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
-</p>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-center">Emoticons Ultra</h1>
+    <p class="max-w-xl text-center text-gray-700 dark:text-gray-300">
+        Create, discover, and save unique kaomoji. Select parts, generate randomly, or click to copy.
+    </p>
 
-<button onclick="toggleDark()" class="px-4 py-2 bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white rounded-xl mb-2 btn">Toggle Dark Mode</button>
+    <div class="flex flex-wrap gap-4 justify-center">
+        <button id="toggleDarkBtn" class="px-4 py-2 bg-gray-700 dark:bg-gray-200 dark:text-gray-900 text-white rounded-xl btn">Toggle Dark Mode</button>
+        <div id="loading" class="hidden px-4 py-2 text-gray-700 dark:text-gray-200">Loading...</div>
+        <div id="auth-status" class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">Authenticating...</div>
+    </div>
 
-<div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
+    <div class="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
 
-  <!-- Output -->
-  <div id="output" class="text-6xl md:text-8xl font-bold text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(☉‿☉)</div>
+        <!-- Output -->
+        <div id="output" class="text-6xl md:text-8xl font-bold text-center p-6 rounded-xl bg-gray-100 dark:bg-gray-700">(◕‿◕✿)</div>
+        <div id="copy-message" class="copy-message">Copied!</div>
 
-  <!-- Single Symbol Toggle -->
-  <div class="flex items-center justify-center gap-3 mb-4">
-    <input type="checkbox" id="singleSymbolMode" class="w-5 h-5">
-    <label for="singleSymbolMode" class="font-semibold text-gray-700 dark:text-gray-300">Single Symbol Mode (Extra Only)</label>
-  </div>
+        <!-- Part Selectors Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div><label class="block font-semibold mb-1">Ears/Head</label><select id="ears" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Left Arm</label><select id="leftArm" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Eyes</label><select id="eyes" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Mouth</label><select id="mouth" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Cheeks</label><select id="cheeks" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Right Arm</label><select id="rightArm" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+            <div><label class="block font-semibold mb-1">Extra</label><select id="extras" class="w-full p-2 border rounded-lg dark:hover:bg-gray-700"></select></div>
+        </div>
 
-  <!-- Part Selectors Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-    <div><label class="block font-semibold mb-1">Left Arm</label><select id="leftArm" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Eyes</label><select id="eyes" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Mouth</label><select id="mouth" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Cheeks</label><select id="cheeks" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Right Arm</label><select id="rightArm" class="w-full p-2 border rounded-lg"></select></div>
-    <div><label class="block font-semibold mb-1">Extra (Stars/Hearts/etc.)</label><select id="extra" class="w-full p-2 border rounded-lg"></select></div>
-  </div>
+        <!-- Buttons -->
+        <div class="flex flex-wrap gap-4 justify-center mt-4">
+            <button id="generateBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl btn">Generate</button>
+            <button id="surpriseBtn" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl btn">Surprise Me!</button>
+            <button id="copyBtn" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl btn">Copy</button>
+            <button id="favoriteBtn" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-xl btn">☆ Favorite</button>
+        </div>
 
-  <!-- Buttons -->
-  <div class="flex flex-wrap gap-4 justify-center mt-4">
-    <button onclick="generateKaomoji()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl btn">Generate</button>
-    <button onclick="surpriseMe()" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl btn">Surprise Me!</button>
-    <button onclick="copyKaomoji()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl btn">Copy</button>
-  </div>
+        <!-- Bulk generator -->
+        <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
+            <input type="number" id="bulkCount" value="50" min="1" max="500" class="p-2 border rounded-lg text-center w-32 dark:hover:bg-gray-700">
+            <button id="generateBulkBtn" class="px-6 py-2 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-xl btn">Generate Bulk</button>
+            <button id="copyAllBtn" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Copy All</button>
+        </div>
 
-  <!-- Bulk generator -->
-  <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
-    <input type="number" id="bulkCount" value="50" min="1" max="500" class="p-2 border rounded-lg text-center w-32">
-    <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-xl btn">Generate Bulk</button>
-    <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-gray-500 hover:bg-gray-600 text-white font-bold rounded-xl btn">Copy All</button>
-  </div>
+        <!-- Bulk output -->
+        <div id="bulkOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
 
-  <!-- Bulk output -->
-  <div id="bulkOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
+        <!-- Direct-Click Symbol Palette -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4 text-center">Kaomoji Parts Palette</h2>
+            <div class="flex flex-wrap gap-2 justify-center" id="symbolPalette"></div>
+        </div>
 
-</div>
+        <!-- History/Favorites -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold mb-4 text-center">Your History & Favorites</h2>
+            <div id="historyOutput" class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar">
+                <p class="text-gray-500 dark:text-gray-400">Loading your kaomoji history...</p>
+            </div>
+        </div>
+    </div>
 
-<script>
-// --------------- DARK MODE ---------------
-function toggleDark(){document.body.classList.toggle('dark');}
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, addDoc, setDoc, onSnapshot, collection, query, where, getDocs, deleteDoc, serverTimestamp, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --------------- PARTS ---------------
-// Expanded kaomojis
-const leftArms = ["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽","┏(","┗(","ᕦ(","ᕤ(","⊂(","⊃(","ლ(","༺"];
-const rightArms = ["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)","(*",")⌒",")╮","༽","༼","┛)","ᕥ)","ᕠ)","⊂)","⊃)","ლ)","༻"];
-const eyesList = ["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼","□","∩","∇","●","∂"];
-const mouths = ["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~","︶","ᄽ"];
-const cheeks = ["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~","ღ","❁"];
-const extras = ["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪","✦","✩","✰","ღ","⚡","✷","✸","✹"];
+        // Firebase log level for debugging
+        setLogLevel('debug');
 
-// --------------- RANDOM ---------------
-function getRandom(list){return list[Math.floor(Math.random()*list.length)];}
+        // Global variables for Firebase access
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-// --------------- GENERATE ---------------
-function generateKaomojiString(random=false){
-  const singleMode=document.getElementById("singleSymbolMode").checked;
-  if(singleMode) return random?getRandom(extras):document.getElementById("extra").value||" ";
-  let l=random?getRandom(leftArms):document.getElementById("leftArm").value;
-  let r=random?getRandom(rightArms):document.getElementById("rightArm").value;
-  let e=random?getRandom(eyesList):document.getElementById("eyes").value;
-  let m=random?getRandom(mouths):document.getElementById("mouth").value;
-  let c=random?getRandom(cheeks):document.getElementById("cheeks").value;
-  let ex=random?getRandom(extras):document.getElementById("extra").value;
-  let k="";
-  if(l)k+=l; if(e)k+=e; if(c)k+=c; if(m)k+=m; if(c)k+=c; if(e)k+=e; if(r)k+=r; if(ex)k+=ex;
-  return k||" ";
-}
+        let db, auth, userId = null;
+        let isAuthReady = false;
 
-function generateKaomoji(){document.getElementById("output").textContent=generateKaomojiString();}
-function surpriseMe(){document.getElementById("output").textContent=generateKaomojiString(true);}
-function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent);}
-function generateBulkKaomoji(){
-  const count=Math.min(parseInt(document.getElementById("bulkCount").value),500);
-  const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
-  for(let i=0;i<count;i++){
-    const k=generateKaomojiString(true);
-    const span=document.createElement("span"); 
-    span.textContent=k;
-    span.className="kaomoji-item";
-    span.onclick=()=>{document.getElementById("output").textContent=k;};
-    bulkDiv.appendChild(span);
-  }
-}
-function copyAllKaomoji(){
-  const all=Array.from(document.getElementById("bulkOutput").children).map(c=>c.textContent).join("\n");
-  navigator.clipboard.writeText(all);
-}
+        // Kaomoji Parts - Now deduplicated
+        const kaomojiParts = {
+            ears: [...new Set(["","(","（","[","｛","<","{","<","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽","┏(","┗(","ᕦ(","ᕤ(","⊂(","⊃(","ლ(","༺","o(","(๑","(╯°","(ง'","(づ","(・","(ಥ","(つ","(｡","(•","( •","(♡","o(´","(*っ"])],
+            leftArms: [...new Set(["","(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","ヽ","(⌒","╭(","༼","༽","┏(","┗(","ᕦ(","ᕤ(","⊂(","⊃(","ლ(","༺"])],
+            eyesList: [...new Set(["","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","☉","♥","❤","♡","✿","☆","◕","o","u","◉","∪","⌒","∘","⌣","｡","☼","□","∩","∇","●","∂","_",">","<","°","o","O","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~","︶","ᄽ","｡◕","•́","•̀","◎",">_<","ò_ó"])],
+            mouths: [...new Set(["","_","o","O","ω","﹏","‿","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","◡","╯","~","︶","ᄽ"])],
+            cheeks: [...new Set(["","///","｀","´","♥","♡","✿","o","｡","°","*",".","~","ღ","❁"])],
+            rightArms: [...new Set(["",")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)","(*",")⌒",")╮","༽","༼","┛)","ᕥ)","ᕠ)","⊂)","⊃)","ლ)","༻"])],
+            extras: [...new Set(["","ﾉ*:･ﾟ✧","♥","♡","✿","☆","✧","★","!!","~","♪","♫","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","☆","★","❀","✪","✦","✩","✰","ღ","⚡","✷","✸","✹"])],
+        };
 
-// --------------- INIT SELECTS ---------------
-function fillSelect(id,list,defaultValue=""){
-  const sel=document.getElementById(id); sel.innerHTML="";
-  list.forEach(item=>{
-    const opt=document.createElement("option");
-    opt.value=item; opt.textContent=item||"None";
-    sel.appendChild(opt);
-  });
-  if(defaultValue) sel.value=defaultValue;
-}
+        const elements = {
+            output: document.getElementById('output'),
+            toggleDarkBtn: document.getElementById('toggleDarkBtn'),
+            ears: document.getElementById('ears'),
+            leftArm: document.getElementById('leftArm'),
+            eyes: document.getElementById('eyes'),
+            mouth: document.getElementById('mouth'),
+            cheeks: document.getElementById('cheeks'),
+            rightArm: document.getElementById('rightArm'),
+            extras: document.getElementById('extras'),
+            generateBtn: document.getElementById('generateBtn'),
+            surpriseBtn: document.getElementById('surpriseBtn'),
+            copyBtn: document.getElementById('copyBtn'),
+            favoriteBtn: document.getElementById('favoriteBtn'),
+            bulkCount: document.getElementById('bulkCount'),
+            generateBulkBtn: document.getElementById('generateBulkBtn'),
+            copyAllBtn: document.getElementById('copyAllBtn'),
+            bulkOutput: document.getElementById('bulkOutput'),
+            symbolPalette: document.getElementById('symbolPalette'),
+            historyOutput: document.getElementById('historyOutput'),
+            copyMessage: document.getElementById('copy-message'),
+            authStatus: document.getElementById('auth-status'),
+        };
+        
+        // Firebase Authentication and Firestore Initialization
+        const initFirebase = async () => {
+            try {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
 
-fillSelect("leftArm", leftArms); fillSelect("rightArm", rightArms);
-fillSelect("eyes", eyesList,"☉"); fillSelect("mouth", mouths,"‿");
-fillSelect("cheeks", cheeks); fillSelect("extra", extras);
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
 
-generateKaomoji();
-</script>
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        elements.authStatus.textContent = `Authenticated. Your ID: ${userId.substring(0, 8)}...`;
+                        setupFirestoreListeners();
+                        console.log("Firestore ready. User ID:", userId);
+                    } else {
+                        isAuthReady = false;
+                        elements.authStatus.textContent = "Authentication failed. History disabled.";
+                        elements.historyOutput.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Authentication failed. History & Favorites are not available.</p>`;
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                elements.authStatus.textContent = "Failed to connect to Firebase.";
+            }
+        };
+
+        // Firestore listeners
+        const setupFirestoreListeners = () => {
+            const kaomojiCollectionPath = `artifacts/${appId}/users/${userId}/kaomoji_history`;
+            const q = query(collection(db, kaomojiCollectionPath), orderBy("timestamp", "desc"));
+        
+            onSnapshot(q, (querySnapshot) => {
+                if (!isAuthReady) return;
+        
+                elements.historyOutput.innerHTML = "";
+                if (querySnapshot.empty) {
+                    elements.historyOutput.innerHTML = `<p class="text-gray-500 dark:text-gray-400">Your history is empty. Generate a kaomoji to save it!</p>`;
+                }
+        
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const k = data.kaomoji;
+                    const span = document.createElement("span");
+                    span.textContent = k;
+                    span.className = "kaomoji-item";
+                    span.setAttribute("data-id", doc.id);
+                    span.addEventListener('click', () => renderKaomoji(k));
+                    
+                    const actions = document.createElement("div");
+                    actions.className = "flex items-center gap-1 ml-2";
+                    
+                    if (data.isFavorite) {
+                        const favIcon = document.createElement("button");
+                        favIcon.innerHTML = '&#9733;'; // Star
+                        favIcon.className = "text-yellow-400 text-lg hover:text-yellow-500 transition-colors duration-200";
+                        favIcon.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            toggleFavorite(doc.id, false);
+                        });
+                        actions.appendChild(favIcon);
+                    }
+                    
+                    const deleteIcon = document.createElement("button");
+                    deleteIcon.innerHTML = '&#10005;'; // X
+                    deleteIcon.className = "text-gray-400 text-lg hover:text-red-500 transition-colors duration-200";
+                    deleteIcon.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const docRef = doc(db, kaomojiCollectionPath, doc.id);
+                        deleteDoc(docRef);
+                    });
+                    actions.appendChild(deleteIcon);
+        
+                    const wrapper = document.createElement("div");
+                    wrapper.className = "flex items-center p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200";
+                    wrapper.appendChild(span);
+                    wrapper.appendChild(actions);
+        
+                    elements.historyOutput.appendChild(wrapper);
+                });
+            }, (error) => {
+                console.error("Failed to listen for history changes:", error);
+            });
+        };
+        
+
+        // Data Management
+        const historyRef = () => collection(db, `artifacts/${appId}/users/${userId}/kaomoji_history`);
+
+        const saveToHistory = async (kaomoji) => {
+            if (!isAuthReady) return;
+            const existingQuery = query(historyRef(), where("kaomoji", "==", kaomoji), limit(1));
+            const existingDocs = await getDocs(existingQuery);
+            if (existingDocs.empty) {
+                await addDoc(historyRef(), {
+                    kaomoji: kaomoji,
+                    isFavorite: false,
+                    timestamp: serverTimestamp()
+                });
+            }
+        };
+
+        const toggleFavorite = async (docId, isFavorite) => {
+            if (!isAuthReady) return;
+            const docRef = doc(db, `artifacts/${appId}/users/${userId}/kaomoji_history`, docId);
+            await setDoc(docRef, { isFavorite: isFavorite }, { merge: true });
+        };
+        
+        // UI Logic
+        const toggleDark = () => document.body.classList.toggle('dark');
+        const showCopyMessage = () => {
+            elements.copyMessage.classList.add('show');
+            if (navigator.vibrate) navigator.vibrate(50);
+            setTimeout(() => elements.copyMessage.classList.remove('show'), 2000);
+        };
+
+        const fillSelect = (id, list) => {
+            const sel = document.getElementById(id); sel.innerHTML = "";
+            list.forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item; opt.textContent = item || "None";
+                sel.appendChild(opt);
+            });
+        };
+
+        const renderPalette = () => {
+            elements.symbolPalette.innerHTML = "";
+            const allSymbols = [
+                ...kaomojiParts.ears, ...kaomojiParts.leftArms, ...kaomojiParts.eyesList,
+                ...kaomojiParts.mouths, ...kaomojiParts.cheeks, ...kaomojiParts.rightArms,
+                ...kaomojiParts.extras
+            ];
+            const uniqueSymbols = [...new Set(allSymbols.filter(s => s !== ''))].sort();
+            uniqueSymbols.forEach(symbol => {
+                const span = document.createElement("span");
+                span.textContent = symbol;
+                span.className = "symbol-palette-item";
+                span.addEventListener('click', () => {
+                    const currentKaomoji = elements.output.textContent;
+                    elements.output.textContent = currentKaomoji + symbol;
+                    saveToHistory(elements.output.textContent);
+                });
+                elements.symbolPalette.appendChild(span);
+            });
+        };
+
+        const renderKaomoji = (kaomoji) => {
+            elements.output.textContent = kaomoji;
+            saveToHistory(kaomoji);
+        };
+
+        // Generation Logic
+        const generateKaomojiString = (random = false) => {
+            let ears = random ? getRandom(kaomojiParts.ears) : elements.ears.value;
+            let leftArm = random ? getRandom(kaomojiParts.leftArms) : elements.leftArm.value;
+            let eyes = random ? getRandom(kaomojiParts.eyesList) : elements.eyes.value;
+            let mouth = random ? getRandom(kaomojiParts.mouths) : elements.mouth.value;
+            let cheeks = random ? getRandom(kaomojiParts.cheeks) : elements.cheeks.value;
+            let rightArm = random ? getRandom(kaomojiParts.rightArms) : elements.rightArm.value;
+            let extras = random ? getRandom(kaomojiParts.extras) : elements.extras.value;
+            
+            let k = `${ears}${leftArm}${eyes}${cheeks}${mouth}${rightArm}${extras}`;
+            return k || "(☉‿☉)";
+        };
+
+        const getRandom = (list) => list[Math.floor(Math.random() * list.length)];
+        
+        // Event Handlers
+        elements.toggleDarkBtn.addEventListener('click', toggleDark);
+        elements.generateBtn.addEventListener('click', () => renderKaomoji(generateKaomojiString()));
+        elements.surpriseBtn.addEventListener('click', () => {
+            renderKaomoji(generateKaomojiString(true));
+        });
+        elements.copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(elements.output.textContent);
+            showCopyMessage();
+        });
+
+        elements.favoriteBtn.addEventListener('click', async () => {
+            if (!isAuthReady) return;
+            const kaomojiToFavorite = elements.output.textContent;
+            
+            // Local UI update for instant feedback
+            const existingQuery = query(historyRef(), where("kaomoji", "==", kaomojiToFavorite), limit(1));
+            const existingDocs = await getDocs(existingQuery);
+            const isCurrentlyFavorite = !existingDocs.empty && existingDocs.docs[0].data().isFavorite;
+            
+            // Toggle local state
+            elements.favoriteBtn.textContent = isCurrentlyFavorite ? "☆ Favorite" : "★ Favorited";
+
+            if (!existingDocs.empty) {
+                const docId = existingDocs.docs[0].id;
+                toggleFavorite(docId, !isCurrentlyFavorite);
+            } else {
+                await addDoc(historyRef(), {
+                    kaomoji: kaomojiToFavorite,
+                    isFavorite: true,
+                    timestamp: serverTimestamp()
+                });
+            }
+            if (navigator.vibrate) navigator.vibrate(50);
+        });
+
+        elements.generateBulkBtn.addEventListener('click', () => {
+            const count = Math.min(parseInt(elements.bulkCount.value), 500);
+            elements.bulkOutput.innerHTML = "";
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < count; i++) {
+                const k = generateKaomojiString(true);
+                const span = document.createElement("span");
+                span.textContent = k;
+                span.className = "kaomoji-item";
+                span.onclick = () => { renderKaomoji(k); };
+                fragment.appendChild(span);
+            }
+            elements.bulkOutput.appendChild(fragment);
+        });
+
+        elements.copyAllBtn.addEventListener('click', () => {
+            const all = Array.from(elements.bulkOutput.children).map(c => c.textContent).join("\n");
+            navigator.clipboard.writeText(all);
+            showCopyMessage();
+        });
+
+        // Initial setup
+        window.onload = () => {
+            initFirebase();
+            fillSelect('ears', kaomojiParts.ears);
+            fillSelect('leftArm', kaomojiParts.leftArms);
+            fillSelect('eyes', kaomojiParts.eyesList);
+            fillSelect('mouth', kaomojiParts.mouths);
+            fillSelect('cheeks', kaomojiParts.cheeks);
+            fillSelect('rightArm', kaomojiParts.rightArms);
+            fillSelect('extras', kaomojiParts.extras);
+            renderKaomoji("(◕‿◕✿)");
+            renderPalette();
+        };
+
+    </script>
 </body>
 </html>
