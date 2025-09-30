@@ -44,7 +44,7 @@ Build full kaomojis, single symbols, or bulk lists. Select parts, generate rando
 
   <!-- Buttons -->
   <div class="flex flex-wrap gap-4 justify-center mt-4">
-    <button onclick="generateKaomoji()" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl">Generate</button>
+    <!-- Removed the Generate button -->
     <button onclick="surpriseMe()" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl">Surprise Me!</button>
     <button onclick="copyKaomoji()" class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl">Copy</button>
   </div>
@@ -94,9 +94,9 @@ function generateKaomojiString(random=false){
   return k||"(☉‿☉)";
 }
 
-function generateKaomoji(){document.getElementById("output").textContent=generateKaomojiString();}
-function surpriseMe(){document.getElementById("output").textContent=generateKaomojiString(true);}
-function copyKaomoji(){navigator.clipboard.writeText(document.getElementById("output").textContent);}
+function updateKaomoji(){ document.getElementById("output").textContent=generateKaomojiString(); }
+function surpriseMe(){ document.getElementById("output").textContent=generateKaomojiString(true); }
+function copyKaomoji(){ navigator.clipboard.writeText(document.getElementById("output").textContent); }
 function generateBulkKaomoji(){
   const count=parseInt(document.getElementById("bulkCount").value);
   const bulkDiv=document.getElementById("bulkOutput"); bulkDiv.innerHTML="";
@@ -124,6 +124,11 @@ fillSelect("eyes", eyesList,"☉"); fillSelect("mouth", mouths,"‿");
 fillSelect("cheeks", cheeks); fillSelect("extra", extras);
 
 generateKaomoji();
+
+// Auto update whenever user changes a selector
+["leftArm","rightArm","eyes","mouth","cheeks","extra","singleSymbolMode"].forEach(id=>{
+  document.getElementById(id).addEventListener("input", updateKaomoji);
+});
 </script>
 </body>
 </html>
