@@ -51,12 +51,12 @@
   <button onclick="surpriseMe()" class="px-6 py-2 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-3xl border-2 border-black">Surprise Me!</button>
   <button onclick="copyKaomoji()" class="px-6 py-2 bg-green-500 hover:bg-green-700 text-white font-bold rounded-3xl border-2 border-black">Copy</button>
 </div>
-    <!-- Bulk generator -->
-    <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
-      <input type="number" id="bulkCount" value="100" min="1" max="1000" class="p-2 border rounded-lg text-center w-32">
-      <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-3xl">Generate Bulk</button>
-      <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-3xl">Copy All</button>
-    </div>
+<!-- Bulk generator -->
+<div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
+  <input type="number" id="bulkCount" value="100" min="1" max="1000" class="p-2 border rounded-lg text-center w-32">
+  <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-3xl border-2 border-black">Generate Bulk</button>
+  <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-3xl border-2 border-black">Copy All</button>
+</div>
 
     <!-- Bulk output -->
     <div id="bulkOutput" class="bg-gray-100 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
@@ -185,6 +185,7 @@ updateOutput(false);
 </script>
 </body>
 </html>
+
 
 
 
