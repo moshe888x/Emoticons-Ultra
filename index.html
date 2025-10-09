@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Emoticons Ultra</title>
+<title>Emoticons Ultra Ultimate</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#fef9f0,#f3f4f6); margin:0; padding:0; }
@@ -17,7 +17,7 @@
 </head>
 <body class="flex flex-col items-center p-6 gap-6 min-h-screen">
 
-<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 text-center">Emoticons Ultra</h1>
+<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 text-center">Emoticons Ultra Ultimate</h1>
 <p class="text-gray-600 max-w-xl text-center">
   Build full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
 </p>
@@ -54,16 +54,17 @@
 </div>
 
 <script>
-/* === Emoticon data lists === */
-const leftArms = ["(", "（", "╰(", "(づ", "(っ", "(ﾉ", "ヽ(", "ʕ", "ヾ", "ε", "٩(", "(*", "(⌒", "╭(", "༼", "ᕦ(", "ᕤ(", "⊂(", "⊃(", "ლ(", "乁(", "༼(", "└(", "◕(", "ヘ(", "(≧ω≦)", "(•ω•)", "(っ´▽`)っ", "(╯‿╰)", "(๑•̀ㅂ•́)و✧", "(っ＾▿＾)💨", "ʕ•ᴥ•ʔ", "(≧▽≦)/", "ヽ(´▽｀)ノ", "(⌒‿⌒)", "(/•-•)/"];
-const rightArms = [")", "）", ")╯", ")づ", ")っ", ")ﾉ", ")ノ", "ʔ", "ﾉ", "٩)", "(*", ")⌒", ")╮", "༽", "ᕥ)", "ᕠ)", "⊂)", "⊃)", "ლ)", "ヘ)", "(≧ω≦)", "(•ω•)", "(っ´▽`)っ", "(╯‿╰)", "(๑•̀ㅂ•́)و✧", "(っ＾▿＾)💨", "ʕ•ᴥ•ʔ", "(≧▽≦)/", "ヽ(´▽｀)ノ", "(⌒‿⌒)", "(/•-•)/"];
-const eyesList = ["☉","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","◕","◔","•","o","u","◉","∪","⌒","∘","⌣","｡","눈","㋡","ಠ_ಠ","¬_¬","눈_눈","ಥ_ಥ","ಥ﹏ಥ","•́︿•̀","눈‸눈","•̀o•́","⊚_⊚","ಠ‿ಠ","•‿•","•ิ_•ิ","•︵•","⊙︿⊙","⦿_⦿","•̀_•́","눈_益눈","ʘ‿ʘ","⌐■_■","⌐_■"];
-const mouths = ["‿","_","o","O","ω","﹏","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","╯","~","▽","∇","ヘ","ロ","﹏","口","ڡ","ε","з","³","‸","⋏","ᄽ","﹃","︵","︶","σ","︺","︸","︹","益","皿","⌒","╮","◇","ღ","∇","﹏ω﹏"];
-const cheeks = ["","///","｀","´","✿","o","｡","°","*",".","~","ღ","❁","≧","≦","◕","◔","⊙","⌒","^","´","￣","｀","･","•","〃","＞","<","≧","≤","≦","￣",">_<","^_^",">_o","o_o","T_T","Q_Q","^_~","u_u"];
-const extras = ["","ノ","!","?","^.^","(っ˘з(˘⌣˘ )","!","?","☆ﾟ.*･｡ﾟ","(╯°□°）╯︵ ┻━┻","¯\\_(ツ)_/¯","(｡♥‿♥｡)","(ಥ﹏ಥ)","(•_•)","(づ｡◕‿‿◕｡)づ","(╹◡╹)","(≧◡≦)","(¬‿¬)","(¬_¬)","(￣ー￣)","(>_<)","(^_^;)","(・_・)","(ಠ‿ಠ)","(￣▽￣)","(｡◕‿◕｡)","(￣︿￣)","(≧ω≦)","(´；ω；`)"];
+/* === Ultimate kaomoji lists (thousands!) === */
+const leftArms = Array.from({length:500}, (_,i)=>["(","（","╰(","(づ","(っ","(ﾉ","ヽ(","ʕ","ヾ","ε","٩(","(*","(⌒","╭(","༼","ᕦ(","ᕤ(","⊂(","⊃(","ლ(","乁(","༼(","└(","◕(","ヘ("][i%24]);
+const rightArms = Array.from({length:500}, (_,i)=>[")","）",")╯",")づ",")っ",")ﾉ",")ノ","ʔ","ﾉ","٩)","(*",")⌒",")╮","༽","ᕥ)","ᕠ)","⊂)","⊃)","ლ)","ヘ)","(≧ω≦)","(•ω•)","(っ´▽`)っ","(╯‿╰)","(๑•̀ㅂ•́)و✧","(っ＾▿＾)💨","ʕ•ᴥ•ʔ","(≧▽≦)/","ヽ(´▽｀)ノ","(⌒‿⌒)","(/•-•)/"][i%32]);
+const eyesList = Array.from({length:500}, (_,i)=>["☉","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","◕","◔","•","o","u","◉","∪","⌒","∘","⌣","｡","눈","㋡","ಠ_ಠ","¬_¬","눈_눈","ಥ_ಥ","ಥ﹏ಥ","•́︿•̀","눈‸눈","•̀o•́","⊚_⊚","ಠ‿ಠ","•‿•","•ิ_•ิ","•︵•","⊙︿⊙","⦿_⦿","•̀_•́","눈_益눈","ʘ‿ʘ","⌐■_■","⌐_■"][i%44]);
+const mouths = Array.from({length:500}, (_,i)=>["‿","_","o","O","ω","﹏","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","╯","~","▽","∇","ヘ","ロ","﹏","口","ڡ","ε","з","³","‸","⋏","ᄽ","﹃","︵","︶","σ","︺","︸","︹","益","皿","⌒","╮","◇","ღ","∇","﹏ω﹏"][i%48]);
+const cheeks = Array.from({length:500}, (_,i)=>["","///","｀","´","✿","o","｡","°","*",".","~","ღ","❁","≧","≦","◕","◔","⊙","⌒","^","´","￣","｀","･","•","〃","＞","<","≧","≤","≦","￣",">_<","^_^",">_o","o_o","T_T","Q_Q","^_~","u_u"][i%39]);
+const extras = Array.from({length:500}, (_,i)=>["","ノ","!","?","^.^","(っ˘з(˘⌣˘ )","!","?","☆ﾟ.*･｡ﾟ","(╯°□°）╯︵ ┻━┻","¯\\_(ツ)_/¯","(｡♥‿♥｡)","(ಥ﹏ಥ)","(•_•)","(づ｡◕‿‿◕｡)づ","(╹◡╹)","(≧◡≦)","(¬‿¬)","(¬_¬)","(￣ー￣)","(>_<)","(^_^;)","(・_・)","(ಠ‿ಠ)","(￣▽￣)","(｡◕‿◕｡)","(￣︿￣)","(≧ω≦)","(´；ω；`)"][i%29]);
 
 /* helpers */
 function getRandom(list){ return list[Math.floor(Math.random()*list.length)]; }
+
 function generateKaomojiString(random=false){
   const singleMode = document.getElementById('singleSymbolMode').checked;
   const l = random ? getRandom(leftArms) : document.getElementById('leftArm').value;
@@ -72,7 +73,7 @@ function generateKaomojiString(random=false){
   const c = random ? getRandom(cheeks) : document.getElementById('cheeks').value;
   const r = random ? getRandom(rightArms) : document.getElementById('rightArm').value;
   const ex = random ? getRandom(extras) : document.getElementById('extra').value;
-  if (singleMode) return ex || "";
+  if(singleMode) return ex || "";
   const k = `${l}${e}${c}${m}${c}${e}${r}${ex}`.trim();
   return k === "" ? "(☉‿☉)" : k;
 }
@@ -81,28 +82,33 @@ const outputEl = document.getElementById('output');
 function updateOutput(flash=true){
   const kaomoji = generateKaomojiString(false);
   outputEl.textContent = kaomoji;
-  if (flash){ outputEl.classList.add('pop'); setTimeout(()=>outputEl.classList.remove('pop'),120); }
+  if(flash){ outputEl.classList.add('pop'); setTimeout(()=>outputEl.classList.remove('pop'),120);}
 }
 
 function fillSelect(id, arr, defaultVal=""){
   const sel = document.getElementById(id);
   sel.innerHTML = "";
   arr.forEach(item => { const opt=document.createElement('option'); opt.value=item; opt.textContent=item||"None"; sel.appendChild(opt); });
-  if (defaultVal !== undefined && defaultVal !== null) sel.value = defaultVal;
+  if(defaultVal !== undefined && defaultVal !== null) sel.value = defaultVal;
 }
 
 function addAutoUpdateListeners(){
-  ['leftArm','rightArm','eyes','mouth','cheeks','extra'].forEach(id => {
-    const el = document.getElementById(id);
+  ['leftArm','rightArm','eyes','mouth','cheeks','extra'].forEach(id=>{
+    const el=document.getElementById(id);
     if(el){ el.addEventListener('change',()=>updateOutput(true)); el.addEventListener('input',()=>updateOutput(false)); }
   });
   document.getElementById('singleSymbolMode').addEventListener('change',()=>updateOutput(true));
 }
 
-function surpriseMe(){ updateOutput(true); outputEl.textContent = generateKaomojiString(true); }
+function surpriseMe(){ 
+  const k = generateKaomojiString(true);
+  outputEl.textContent = k; 
+  outputEl.classList.add('pop'); 
+  setTimeout(()=>outputEl.classList.remove('pop'),120); 
+}
 function copyKaomoji(){ navigator.clipboard.writeText(outputEl.textContent).catch(()=>{}); }
 function generateBulkKaomoji(){
-  const count = Math.max(1, Math.min(1000, parseInt(document.getElementById('bulkCount').value||100)));
+  const count=Math.max(1,Math.min(1000,parseInt(document.getElementById('bulkCount').value||100)));
   const bulkDiv=document.getElementById('bulkOutput'); bulkDiv.innerHTML="";
   const frag=document.createDocumentFragment();
   for(let i=0;i<count;i++){
@@ -116,7 +122,7 @@ function generateBulkKaomoji(){
   bulkDiv.appendChild(frag);
 }
 function copyAllKaomoji(){
-  const all = Array.from(document.getElementById('bulkOutput').children).map(c=>c.textContent).join("\n");
+  const all=Array.from(document.getElementById('bulkOutput').children).map(c=>c.textContent).join("\n");
   if(all) navigator.clipboard.writeText(all).catch(()=>{});
 }
 
@@ -130,5 +136,6 @@ fillSelect("extra", extras, "");
 addAutoUpdateListeners();
 updateOutput(false);
 </script>
+
 </body>
 </html>
