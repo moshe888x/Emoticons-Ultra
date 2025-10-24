@@ -1,0 +1,373 @@
+/* === CSS Variables === */
+:root {
+  --bg-start: #fef9f0;
+  --bg-end: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-muted: #6b7280;
+  --card-bg: #ffffff;
+  --panel-bg: #f3f4f6;
+  --accent: #3b82f6;
+  --success: #10b981;
+  --danger: #ef4444;
+  --border: #d1d5db;
+  --hover-bg: #e5e7eb;
+}
+
+/* === Base Styles === */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+  margin: 0;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Utility Classes === */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === Typography === */
+.title {
+  font-size: 2.25rem;
+  line-height: 1.05;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0;
+}
+
+.lead {
+  color: var(--text-muted);
+  max-width: 720px;
+  text-align: center;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.field-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.875rem;
+}
+
+.label-strong {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.muted-note {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* === Cards === */
+.main-card {
+  background: var(--card-bg);
+  padding: 32px;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.main-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+}
+
+/* === Output Display === */
+.output {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 32px 24px;
+  border-radius: 16px;
+  background: var(--panel-bg);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  word-break: break-word;
+  transition: transform 0.12s ease-out;
+}
+
+.output.pop {
+  transform: scale(1.05);
+}
+
+/* === Form Controls === */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--panel-bg);
+  border-radius: 12px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.select-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+select.select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select.select:hover {
+  border-color: var(--accent);
+}
+
+select.select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.number-input {
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+  width: 128px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* === Buttons === */
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn {
+  padding: 12px 28px;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-orange {
+  background: linear-gradient(135deg, #ff7300, #ff5500);
+}
+
+.btn-orange:hover {
+  background: linear-gradient(135deg, #ff5500, #cc4400);
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #12d400, #0fb600);
+}
+
+.btn-green:hover {
+  background: linear-gradient(135deg, #0fb600, #0a9400);
+}
+
+.btn-blue {
+  background: linear-gradient(135deg, #0066ff, #0044cc);
+}
+
+.btn-blue:hover {
+  background: linear-gradient(135deg, #0044cc, #003399);
+}
+
+.btn-yellow {
+  background: linear-gradient(135deg, #e9c600, #d1b200);
+}
+
+.btn-yellow:hover {
+  background: linear-gradient(135deg, #d1b200, #b89f00);
+}
+
+/* === Bulk Controls === */
+.bulk-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.bulk-output {
+  background: var(--panel-bg);
+  padding: 20px;
+  border-radius: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 80px;
+}
+
+.bulk-output:empty::after {
+  content: 'Generated emoticons will appear here...';
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 80px;
+}
+
+.Emoticon-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: white;
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-weight: 600;
+  border: 2px solid transparent;
+}
+
+.Emoticon-item:hover {
+  background: var(--hover-bg);
+  transform: scale(1.08);
+  border-color: var(--accent);
+}
+
+.Emoticon-item:focus {
+  outline: none;
+  background: var(--hover-bg);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.Emoticon-item:active {
+  transform: scale(1);
+}
+
+/* === Toast Notifications === */
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 14px 24px;
+  background: var(--success);
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.error {
+  background: var(--danger);
+}
+
+/* === Responsive Design === */
+@media (min-width: 768px) {
+  .title {
+    font-size: 3rem;
+  }
+
+  .output {
+    font-size: 4.5rem;
+    min-height: 140px;
+  }
+
+  .select-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .bulk-row {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .select-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
