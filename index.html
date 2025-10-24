@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Emoticons Ultra</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg,#fef9f0,#f3f4f6); margin:0; padding:0; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .kaomoji-item:hover { background-color: #e5e7eb; cursor: pointer; transform: scale(1.1); transition: transform 0.15s; }
+  .card { transition: transform 0.2s, box-shadow 0.2s; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
+  .pop { transform: scale(1.04); transition: transform 0.12s; }
+</style>
+</head>
+<body class="flex flex-col items-center p-6 gap-6">
+
+<h1 class="text-4xl md:text-5xl font-extrabold text-gray-800 text-center">Emoticons Ultra</h1>
+<p class="text-gray-600 max-w-xl text-center">
+  Build full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
+</p>
+
+<div class="bg-white p-6 md:p-8 rounded-3xl shadow-xl w-full max-w-6xl flex flex-col gap-6 card">
+
+  <!-- Output -->
+  <div id="output" class="text-6xl md:text-8xl font-bold text-gray-700 text-center p-6 rounded-xl bg-gray-100"></div>
+
+  <!-- Single Symbol Toggle -->
+  <div class="flex items-center justify-center gap-3 mb-4">
+    <input type="checkbox" id="singleSymbolMode" class="w-5 h-5">
+    <label for="singleSymbolMode" class="font-semibold text-gray-700">Single Symbol Mode (Extra Only)</label>
+  </div>
+
+  <!-- Part Selectors Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+    <div><label class="block font-semibold mb-1">Left Arm</label><select id="leftArm" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Eyes</label><select id="eyes" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Mouth</label><select id="mouth" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Cheeks</label><select id="cheeks" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Right Arm</label><select id="rightArm" class="w-full p-2 border rounded-lg"></select></div>
+    <div><label class="block font-semibold mb-1">Extra (Star/Heart/etc.)</label><select id="extra" class="w-full p-2 border rounded-lg"></select></div>
+  </div>
+
+  <!-- Small buttons -->
+  <div class="flex flex-wrap gap-4 justify-center mt-4">
+    <button onclick="surpriseMe()" class="px-6 py-2 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-3xl border-2 border-black">Surprise Me</button>
+    <button onclick="copyKaomoji()" class="px-6 py-2 bg-green-500 hover:bg-green-700 text-white font-bold rounded-3xl border-2 border-black">Copy</button>
+  </div>
+
+  <!-- Bulk generator -->
+  <div class="flex flex-col md:flex-row gap-4 items-center justify-center mt-4">
+    <input type="number" id="bulkCount" value="100" min="1" max="1000" class="p-2 border rounded-lg text-center w-32">
+    <button onclick="generateBulkKaomoji()" class="px-6 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded-3xl border-2 border-black">Generate Many</button>
+    <button onclick="copyAllKaomoji()" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-700 text-white font-bold rounded-3xl border-2 border-black">Copy All</button>
+  </div>
+
+  <!-- Bulk output -->
+  <div id="bulkOutput" class="bg-gray-100 p-4 rounded-xl max-h-96 overflow-y-auto flex flex-wrap gap-2 no-scrollbar"></div>
+
+</div>
+
+<script>
+/* === Data lists (no empty strings) === */
+const leftArms = ["(", "（", "╰(", "(づ", "(っ", "(ﾉ", "ヽ(", "ʕ", "ヾ", "ε", "٩(", "(*", "ヽ(", "(⌒", "╭(", "༼", "ᕦ(","ᕤ(","⊂(","⊃(","ლ("];
+const rightArms = [")", "）", ")╯", ")づ", ")っ", ")ﾉ", ")ノ", "ʔ", "ﾉ", "٩)", "(*", ")⌒", ")╮", "༽", "ᕥ)","ᕠ)","⊂)","⊃)","ლ)"];
+const eyesList = ["☉","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼","◕","◔","✧","✿"];
+const mouths = ["‿","_","o","O","ω","﹏","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","╯","~","3","ω","v","▽","∇"];
+const cheeks = ["///","｀","´","♥","♡","✿","o","｡","°","*",".","~","ღ","❁","✿","°"];
+const extras = ["☆","♥","♡","✿","★","♪","♫","!!","~","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","❀","✪","❀","✦","✩","✷","✸","✹"];
+
+/* Helpers */
+function getRandom(list){ return list[Math.floor(Math.random()*list.length)]; }
+
+/* Build Kaomoji */
+function generateKaomojiString(random=false){
+  const singleMode = document.getElementById('singleSymbolMode').checked;
+
+  const l = random ? getRandom(leftArms) : document.getElementById('leftArm').value;
+  const e = random ? getRandom(eyesList) : document.getElementById('eyes').value;
+  const m = random ? getRandom(mouths) : document.getElementById('mouth').value;
+  const c = random ? getRandom(cheeks) : document.getElementById('cheeks').value;
+  const r = random ? getRandom(rightArms) : document.getElementById('rightArm').value;
+  const ex = random ? getRandom(extras) : document.getElementById('extra').value;
+
+  if (singleMode) return ex || "";
+
+  const k = `${l||""}${e||""}${c||""}${m||""}${c||""}${e||""}${r||""}${ex||""}`.trim();
+  return k === "" ? "" : k;
+}
+
+/* Update output */
+const outputEl = document.getElementById('output');
+function updateOutput(flash=true){
+  const kaomoji = generateKaomojiString(false);
+  outputEl.textContent = kaomoji;
+  if (flash){
+    outputEl.classList.add('pop');
+    setTimeout(()=> outputEl.classList.remove('pop'), 120);
+  }
+}
+
+/* Fill selects with single None option */
+function fillSelect(id, arr, defaultVal=""){
+  const sel = document.getElementById(id);
+  sel.innerHTML = "";
+
+  const noneOpt = document.createElement('option');
+  noneOpt.value = "";
+  noneOpt.textContent = "None";
+  sel.appendChild(noneOpt);
+
+  arr.forEach(item => {
+    const opt = document.createElement('option');
+    opt.value = item;
+    opt.textContent = item;
+    sel.appendChild(opt);
+  });
+
+  if (defaultVal !== undefined && defaultVal !== null) sel.value = defaultVal;
+}
+
+/* Auto-update listeners */
+function addAutoUpdateListeners(){
+  const inputs = ['leftArm','rightArm','eyes','mouth','cheeks','extra'];
+  inputs.forEach(id => {
+    const el = document.getElementById(id);
+    if (el){
+      el.addEventListener('change', () => updateOutput(true));
+      el.addEventListener('input', () => updateOutput(false));
+    }
+  });
+  document.getElementById('singleSymbolMode').addEventListener('change', () => updateOutput(true));
+}
+
+/* Buttons */
+function surpriseMe(){ 
+  // Random parts, but never pick None
+  const k = `${getRandom(leftArms)}${getRandom(eyesList)}${getRandom(cheeks)}${getRandom(mouths)}${getRandom(cheeks)}${getRandom(eyesList)}${getRandom(rightArms)}${getRandom(extras)}`;
+  outputEl.textContent = k;
+  outputEl.classList.add('pop'); 
+  setTimeout(()=>outputEl.classList.remove('pop'),120); 
+}
+
+function copyKaomoji(){ 
+  navigator.clipboard.writeText(outputEl.textContent).catch(()=>{}); 
+}
+
+function generateBulkKaomoji(){
+  const count = Math.max(1, Math.min(1000, parseInt(document.getElementById('bulkCount').value || 100)));
+  const bulkDiv = document.getElementById('bulkOutput'); 
+  bulkDiv.innerHTML = "";
+  const frag = document.createDocumentFragment();
+
+  for (let i=0;i<count;i++){
+    const k = generateKaomojiString(true);
+    const span = document.createElement('span');
+    span.textContent = k;
+    span.className = "kaomoji-item p-1 rounded-md";
+    span.style.marginRight = "6px";
+    span.style.marginBottom = "6px";
+    span.onclick = () => { outputEl.textContent = k; outputEl.classList.add('pop'); setTimeout(()=>outputEl.classList.remove('pop'),120); };
+    frag.appendChild(span);
+  }
+
+  bulkDiv.appendChild(frag);
+}
+
+function copyAllKaomoji(){
+  const all = Array.from(document.getElementById('bulkOutput').children).map(c=>c.textContent).join("\n");
+  if (all) navigator.clipboard.writeText(all).catch(()=>{});
+}
+
+/* Populate selects */
+fillSelect("leftArm", leftArms, "");
+fillSelect("rightArm", rightArms, "");
+fillSelect("eyes", eyesList, "");
+fillSelect("mouth", mouths, "");
+fillSelect("cheeks", cheeks, "");
+fillSelect("extra", extras, "");
+
+/* Wire listeners and show default */
+addAutoUpdateListeners();
+updateOutput(false);
+</script>
+</body>
+</html>
