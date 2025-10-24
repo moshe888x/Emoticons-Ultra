@@ -1,324 +1,737 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Emoticons Ultra</title>
-<style>
-  :root{
-    --bg-start:#fef9f0;
-    --bg-end:#f3f4f6;
-    --muted:#6b7280;
-    --card-bg:#ffffff;
-    --panel-bg:#f3f4f6;
-    --accent:#3b82f6;
-    --success:#10b981;
-    --danger:#ef4444;
-    --black:#000000;
-  }
-
-  /* Base layout */
-  body.app{
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg,var(--bg-start),var(--bg-end));
-    margin:0; padding:24px; display:flex; flex-direction:column; align-items:center; gap:24px;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-
-  /* Utility: hide scrollbars */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-  /* Card */
-  .main-card{ background:var(--card-bg); padding:20px; border-radius:28px; box-shadow:0 8px 24px rgba(15,23,42,0.06); width:100%; max-width:1100px; display:flex; flex-direction:column; gap:20px; }
-  .card{ transition: transform 0.2s, box-shadow 0.2s; }
-  .card:hover{ transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.12); }
-
-  /* Title / lead */
-  .title{ font-size:2.25rem; line-height:1.05; font-weight:800; color:#111827; text-align:center; margin:0; }
-  @media(min-width:768px){ .title{ font-size:3rem; } }
-
-  .lead{ color:var(--muted); max-width:720px; text-align:center; margin:0; }
-
-  /* Output display */
-  .output{ font-size:3rem; font-weight:700; color:#374151; text-align:center; padding:24px; border-radius:12px; background:var(--panel-bg); min-height:120px; display:flex; align-items:center; justify-content:center; }
-  @media(min-width:768px){ .output{ font-size:4.5rem; min-height:140px; } }
-
-  .pop{ transform:scale(1.04); transition:transform 0.12s; }
-
-  /* Row & controls */
-  .toggle-row{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:12px; }
-  input[type="checkbox"], input[type="radio"]{ width:20px; height:20px; }
-  .field-label{ font-weight:600; color:#374151; display:block; margin-bottom:6px; }
-  .label-strong{ font-weight:600; color:#374151; }
-  .muted-note{ color:#6b7280; font-size:0.95rem; }
-
-  /* Grid of selects */
-  .select-grid{ display:grid; grid-template-columns:1fr; gap:12px; }
-  @media(min-width:768px){ .select-grid{ grid-template-columns:repeat(3,1fr); } }
-  @media(min-width:1024px){ .select-grid{ grid-template-columns:repeat(6,1fr); } }
-
-  select.select{ width:100%; padding:8px 10px; border:1px solid #d1d5db; border-radius:10px; background:white; font-size:1rem; }
-
-  /* Buttons */
-  .btn-row{ display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:8px; }
-  .btn{ padding:10px 24px; color:rgb(255, 255, 255); font-weight:700; border-radius:999px; border:2px solid var(--black); cursor:pointer; transition:background-color 0.12s, transform 0.08s; }
-  .btn:active{ transform:translateY(1px); }
-  .btn-orange{ background:#ff7300; }
-  .btn-orange:hover{ background:#ce5d00; }
-  .btn-green{ background:#12d400; }
-  .btn-green:hover{ background:#0fb600; }
-  .btn-blue{ background:#0004ff; }
-  .btn-blue:hover{ background:#0003ce; }
-  .btn-yellow{ background:#e9c600; }
-  .btn-yellow:hover{ background:#d1b200; }
-
-  /* Bulk controls */
-  .bulk-row{ display:flex; flex-direction:column; gap:12px; align-items:center; justify-content:center; margin-top:8px; }
-  @media(min-width:768px){ .bulk-row{ flex-direction:row; } }
-  .number-input{ padding:8px; border:1px solid #d1d5db; border-radius:10px; text-align:center; width:128px; }
-
-  /* Bulk output list */
-  .bulk-output{ background:var(--panel-bg); padding:14px; border-radius:12px; max-height:24rem; overflow-y:auto; display:flex; flex-wrap:wrap; gap:8px; }
-  .kaomoji-item{ padding:6px 8px; border-radius:8px; display:inline-block; transition:transform 0.15s, background-color 0.12s; }
-  .kaomoji-item:hover{ background:#e5e7eb; cursor:pointer; transform:scale(1.05); }
-  .kaomoji-item:focus{ outline:2px solid var(--accent); outline-offset:2px; background:#e5e7eb; }
-
-  /* Toast */
-  .toast{ position:fixed; top:20px; right:20px; padding:12px 24px; background:var(--success); color:white; border-radius:8px; font-weight:600; opacity:0; transform:translateY(-20px); transition:all 0.3s; z-index:1000; pointer-events:none; }
-  .toast.show{ opacity:1; transform:translateY(0); }
-  .toast.error{ background:var(--danger); }
-
-  /* small helpers */
-  .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-
-</style>
-</head>
-<body class="app">
-
-<div id="toast" class="toast" role="alert" aria-live="polite"></div>
-
-<h1 class="title">Emoticons Ultra</h1>
-<p class="lead">
-  Build full kaomojis, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
-</p>
-
-<div class="main-card card">
-
-  <!-- Output -->
-  <div id="output" class="output" role="region" aria-live="polite" aria-label="Generated emoticon"></div>
-
-  <!-- Single Symbol Toggle -->
-  <div class="toggle-row">
-    <input type="checkbox" id="singleSymbolMode" aria-describedby="singleModeDesc">
-    <label for="singleSymbolMode" class="label-strong">Single Symbol Mode</label>
-  <span id="singleModeDesc" class="muted-note">(Shows only the Extra symbol)</span>
-  </div>
-
-  <!-- Part Selectors Grid -->
-  <div class="select-grid">
-    <div><label for="leftArm" class="field-label">Left Arm</label><select id="leftArm" class="select" aria-label="Select left arm"></select></div>
-    <div><label for="eyes" class="field-label">Eyes</label><select id="eyes" class="select" aria-label="Select eyes"></select></div>
-    <div><label for="mouth" class="field-label">Mouth</label><select id="mouth" class="select" aria-label="Select mouth"></select></div>
-    <div><label for="cheeks" class="field-label">Cheeks</label><select id="cheeks" class="select" aria-label="Select cheeks"></select></div>
-    <div><label for="rightArm" class="field-label">Right Arm</label><select id="rightArm" class="select" aria-label="Select right arm"></select></div>
-    <div><label for="extra" class="field-label">Extra (Star/Heart/etc.)</label><select id="extra" class="select" aria-label="Select extra symbol"></select></div>
-  </div>
-
-  <!-- Small buttons -->
-  <div class="btn-row">
-    <button onclick="surpriseMe()" class="btn btn-orange" aria-label="Generate random emoticon">Surprise Me</button>
-    <button onclick="copyKaomoji()" class="btn btn-green" aria-label="Copy current emoticon to clipboard">Copy</button>
-  </div>
-
-  <!-- Bulk generator -->
-  <div class="bulk-row">
-    <label for="bulkCount" class="sr-only">Number of emoticons to generate</label>
-    <input type="number" id="bulkCount" value="100" min="1" max="1000" class="number-input" aria-label="Bulk count">
-    <button onclick="generateBulkKaomoji()" class="btn btn-blue" aria-label="Generate multiple random emoticons">Generate Many</button>
-    <button onclick="copyAllKaomoji()" class="btn btn-yellow" aria-label="Copy all generated emoticons">Copy All</button>
-  </div>
-
-  <!-- Bulk output -->
-  <div id="bulkOutput" class="bulk-output no-scrollbar" role="region" aria-label="Bulk generated emoticons"></div>
-
-</div>
-
-<script>
-/* === Data lists === */
-const leftArms = ["(", "（", "╰(", "(づ", "(っ", "(ﾉ", "ヽ(", "ʕ", "ヾ", "ε", "٩(", "(*", "ヽ(", "(⌒", "╭(", "༼", "ᕦ(","ᕤ(","⊂(","⊃(","ლ("];
-const rightArms = [")", "）", ")╯", ")づ", ")っ", ")ﾉ", ")ノ", "ʔ", "ﾉ", "٩)", "(*", ")⌒", ")╮", "༽", "ᕥ)","ᕠ)","⊂)","⊃)","ლ)"];
-const eyesList = ["☉","^","°","•","¬","ಠ","´","x","X","T","ಥ","⊙","♥","❤","♡","✿","☆","◕","•","o","u","◉","∪","⌒","∘","⌣","｡","☼","◕","◔","✧","✿"];
-const mouths = ["‿","_","o","O","ω","﹏","△","∀","3","︿","Д","皿","益","д","ε","з","v","▾","ᗝ","□","╯","~","3","ω","v","▽","∇"];
-const cheeks = ["///","｀","´","♥","♡","✿","o","｡","°","*",".","~","ღ","❁","✿","°"];
-const extras = ["☆","♥","♡","✿","★","♪","♫","!!","~","☆ﾟ.*･｡ﾟ","ノ","(っ˘з(˘⌣˘ )","!","?","^.^","❀","✪","❀","✦","✩","✷","✸","✹"];
-
-/* Toast notifications */
-function showToast(message, isError = false) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.className = 'toast show' + (isError ? ' error' : '');
-  setTimeout(() => {
-    toast.className = 'toast';
-  }, 2000);
-}
-
-/* Helpers */
-function getRandom(list){ return list[Math.floor(Math.random()*list.length)]; }
-
-/* Build Kaomoji */
-function generateKaomojiString(random=false){
-  const singleMode = document.getElementById('singleSymbolMode').checked;
-
-  if (singleMode) {
-    const ex = random ? getRandom(extras) : document.getElementById('extra').value;
-    return ex || "";
-  }
-
-  const l = random ? getRandom(leftArms) : (document.getElementById('leftArm').value || "");
-  const e = random ? getRandom(eyesList) : (document.getElementById('eyes').value || "");
-  const m = random ? getRandom(mouths) : (document.getElementById('mouth').value || "");
-  const c = random ? getRandom(cheeks) : (document.getElementById('cheeks').value || "");
-  const r = random ? getRandom(rightArms) : (document.getElementById('rightArm').value || "");
-  const ex = random ? getRandom(extras) : (document.getElementById('extra').value || "");
-
-  // Build with proper spacing logic
-  let kaomoji = "";
-  if (l) kaomoji += l;
-  if (e) kaomoji += e;
-  if (c) kaomoji += c;
-  if (m) kaomoji += m;
-  if (c) kaomoji += c;
-  if (e) kaomoji += e;
-  if (r) kaomoji += r;
-  if (ex) kaomoji += ex;
-
-  return kaomoji;
-}
-
-/* Update output */
-const outputEl = document.getElementById('output');
-function updateOutput(flash=true){
-  const kaomoji = generateKaomojiString(false);
-  outputEl.textContent = kaomoji;
-  if (flash){
-    outputEl.classList.add('pop');
-    setTimeout(()=> outputEl.classList.remove('pop'), 120);
-  }
-}
-
-/* Fill selects with None option */
-function fillSelect(id, arr, defaultVal=""){
-  const sel = document.getElementById(id);
-  sel.innerHTML = "";
-
-  const noneOpt = document.createElement('option');
-  noneOpt.value = "";
-  noneOpt.textContent = "None";
-  sel.appendChild(noneOpt);
-
-  arr.forEach(item => {
-    const opt = document.createElement('option');
-    opt.value = item;
-    opt.textContent = item;
-    sel.appendChild(opt);
-  });
-
-  if (defaultVal !== undefined && defaultVal !== null) sel.value = defaultVal;
-}
-
-/* Auto-update listeners */
-function addAutoUpdateListeners(){
-  const inputs = ['leftArm','rightArm','eyes','mouth','cheeks','extra'];
-  inputs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el){
-      el.addEventListener('change', () => updateOutput(true));
-      el.addEventListener('input', () => updateOutput(false));
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emoticons Ultra</title>
+  <style>
+    /* === CSS Variables === */
+    :root {
+      --bg-start: #fef9f0;
+      --bg-end: #f3f4f6;
+      --text-primary: #111827;
+      --text-secondary: #374151;
+      --text-muted: #6b7280;
+      --card-bg: #ffffff;
+      --panel-bg: #f3f4f6;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --border: #d1d5db;
+      --hover-bg: #e5e7eb;
     }
-  });
-  document.getElementById('singleSymbolMode').addEventListener('change', () => updateOutput(true));
-}
 
-/* Buttons */
-function surpriseMe(){ 
-  const k = `${getRandom(leftArms)}${getRandom(eyesList)}${getRandom(cheeks)}${getRandom(mouths)}${getRandom(cheeks)}${getRandom(eyesList)}${getRandom(rightArms)}${getRandom(extras)}`;
-  outputEl.textContent = k;
-  outputEl.classList.add('pop'); 
-  setTimeout(()=>outputEl.classList.remove('pop'),120); 
-}
+    /* === Base Styles === */
+    * {
+      box-sizing: border-box;
+    }
 
-function copyKaomoji(){ 
-  const text = outputEl.textContent;
-  if (!text) {
-    showToast('Nothing to copy!', true);
-    return;
-  }
-  navigator.clipboard.writeText(text)
-    .then(() => showToast('Copied to clipboard! ✓'))
-    .catch(() => showToast('Failed to copy', true)); 
-}
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+      margin: 0;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
-function generateBulkKaomoji(){
-  const count = Math.max(1, Math.min(1000, parseInt(document.getElementById('bulkCount').value || 100)));
-  const bulkDiv = document.getElementById('bulkOutput'); 
-  bulkDiv.innerHTML = "";
-  const frag = document.createDocumentFragment();
-
-  for (let i=0;i<count;i++){
-    const k = generateKaomojiString(true);
-    const span = document.createElement('span');
-    span.textContent = k;
-  span.className = 'kaomoji-item';
-  span.style.marginRight = "6px";
-  span.style.marginBottom = "6px";
-    span.tabIndex = 0;
-    span.role = "button";
-    span.setAttribute('aria-label', `Select emoticon ${k}`);
+    /* === Utility Classes === */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
     
-    const selectKaomoji = () => {
-      outputEl.textContent = k;
-      outputEl.classList.add('pop');
-      setTimeout(()=>outputEl.classList.remove('pop'),120);
-      showToast('Selected!');
-    };
-    
-    span.onclick = selectKaomoji;
-    span.onkeydown = (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        selectKaomoji();
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* === Typography === */
+    .title {
+      font-size: 2.25rem;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-align: center;
+      margin: 0;
+    }
+
+    .lead {
+      color: var(--text-muted);
+      max-width: 720px;
+      text-align: center;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .field-label {
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.875rem;
+    }
+
+    .label-strong {
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .muted-note {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    /* === Cards === */
+    .main-card {
+      background: var(--card-bg);
+      padding: 32px;
+      border-radius: 28px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .main-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+    }
+
+    /* === Output Display === */
+    .output {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 32px 24px;
+      border-radius: 16px;
+      background: var(--panel-bg);
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      word-break: break-word;
+      transition: transform 0.12s ease-out;
+    }
+
+    .output.pop {
+      transform: scale(1.05);
+    }
+
+    /* === Form Controls === */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+      background: var(--panel-bg);
+      border-radius: 12px;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+
+    .select-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    select.select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select.select:hover {
+      border-color: var(--accent);
+    }
+
+    select.select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .number-input {
+      padding: 10px 12px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+      width: 128px;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .number-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* === Buttons === */
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, #ff7300, #ff5500);
+    }
+
+    .btn-orange:hover {
+      background: linear-gradient(135deg, #ff5500, #cc4400);
+    }
+
+    .btn-green {
+      background: linear-gradient(135deg, #12d400, #0fb600);
+    }
+
+    .btn-green:hover {
+      background: linear-gradient(135deg, #0fb600, #0a9400);
+    }
+
+    .btn-blue {
+      background: linear-gradient(135deg, #0066ff, #0044cc);
+    }
+
+    .btn-blue:hover {
+      background: linear-gradient(135deg, #0044cc, #003399);
+    }
+
+    .btn-yellow {
+      background: linear-gradient(135deg, #e9c600, #d1b200);
+    }
+
+    .btn-yellow:hover {
+      background: linear-gradient(135deg, #d1b200, #b89f00);
+    }
+
+    /* === Bulk Controls === */
+    .bulk-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bulk-output {
+      background: var(--panel-bg);
+      padding: 20px;
+      border-radius: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 80px;
+    }
+
+    .bulk-output:empty::after {
+      content: 'Generated emoticons will appear here...';
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 80px;
+    }
+
+    .Emoticon-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: white;
+      display: inline-block;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 600;
+      border: 2px solid transparent;
+    }
+
+    .Emoticon-item:hover {
+      background: var(--hover-bg);
+      transform: scale(1.08);
+      border-color: var(--accent);
+    }
+
+    .Emoticon-item:focus {
+      outline: none;
+      background: var(--hover-bg);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .Emoticon-item:active {
+      transform: scale(1);
+    }
+
+    /* === Toast Notifications === */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 14px 24px;
+      background: var(--success);
+      color: white;
+      border-radius: 12px;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.error {
+      background: var(--danger);
+    }
+
+    /* === Responsive Design === */
+    @media (min-width: 768px) {
+      .title {
+        font-size: 3rem;
       }
+
+      .output {
+        font-size: 4.5rem;
+        min-height: 140px;
+      }
+
+      .select-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .bulk-row {
+        flex-direction: row;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .select-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- Header -->
+  <h1 class="title">Emoticons Ultra</h1>
+  <p class="lead">
+    Build full Emoticons, single symbols, or bulk lists. Select parts, generate randomly, or copy instantly.
+  </p>
+
+  <!-- Main Card -->
+  <div class="main-card">
+    <!-- Output Display -->
+    <div id="output" class="output" role="region" aria-live="polite" aria-label="Generated emoticon"></div>
+
+    <!-- Single Symbol Toggle -->
+    <div class="toggle-row">
+      <input type="checkbox" id="singleSymbolMode" aria-describedby="singleModeDesc">
+      <label for="singleSymbolMode" class="label-strong">Single Symbol Mode</label>
+      <span id="singleModeDesc" class="muted-note">(Shows only the Extra symbol)</span>
+    </div>
+
+    <!-- Part Selectors -->
+    <div class="select-grid">
+      <div>
+        <label for="leftArm" class="field-label">Left Arm</label>
+        <select id="leftArm" class="select" aria-label="Select left arm"></select>
+      </div>
+      <div>
+        <label for="eyes" class="field-label">Eyes</label>
+        <select id="eyes" class="select" aria-label="Select eyes"></select>
+      </div>
+      <div>
+        <label for="mouth" class="field-label">Mouth</label>
+        <select id="mouth" class="select" aria-label="Select mouth"></select>
+      </div>
+      <div>
+        <label for="cheeks" class="field-label">Cheeks</label>
+        <select id="cheeks" class="select" aria-label="Select cheeks"></select>
+      </div>
+      <div>
+        <label for="rightArm" class="field-label">Right Arm</label>
+        <select id="rightArm" class="select" aria-label="Select right arm"></select>
+      </div>
+      <div>
+        <label for="extra" class="field-label">Extra</label>
+        <select id="extra" class="select" aria-label="Select extra symbol"></select>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="btn-row">
+      <button id="surpriseBtn" class="btn btn-orange" aria-label="Generate random emoticon">
+        Surprise Me
+      </button>
+      <button id="copyBtn" class="btn btn-green" aria-label="Copy current emoticon to clipboard">
+        Copy
+      </button>
+    </div>
+
+    <!-- Bulk Generator Controls -->
+    <div class="bulk-row">
+      <label for="bulkCount" class="sr-only">Number of emoticons to generate</label>
+      <input 
+        type="number" 
+        id="bulkCount" 
+        value="100" 
+        min="1" 
+        max="1000" 
+        class="number-input" 
+        aria-label="Bulk count"
+      >
+      <button id="generateBulkBtn" class="btn btn-blue" aria-label="Generate multiple random emoticons">
+        Generate Many
+      </button>
+      <button id="copyAllBtn" class="btn btn-yellow" aria-label="Copy all generated emoticons">
+        Copy All
+      </button>
+    </div>
+
+    <!-- Bulk Output -->
+    <div id="bulkOutput" class="bulk-output no-scrollbar" role="region" aria-label="Bulk generated emoticons"></div>
+  </div>
+
+  <script>
+    // ===================================
+    // Data Arrays
+    // ===================================
+    const PARTS = {
+      leftArms: [
+        "(", "（", "╰(", "(づ", "(っ", "(ﾉ", "ヽ(", "ʕ", "ヾ", "ε", "٩(", 
+        "(*", "ヽ(", "(⌒", "╭(", "༼", "ᕦ(", "ᕤ(", "⊂(", "⊃(", "ლ("
+      ],
+      rightArms: [
+        ")", "）", ")╯", ")づ", ")っ", ")ﾉ", ")ノ", "ʔ", "ﾉ", "٩)", 
+        "(*", ")⌒", ")╮", "༽", "ᕥ)", "ᕠ)", "⊂)", "⊃)", "ლ)"
+      ],
+      eyes: [
+        "☉", "^", "°", "•", "¬", "ಠ", "´", "x", "X", "T", "ಥ", "⊙", 
+        "♥", "❤", "♡", "✿", "☆", "◕", "•", "o", "u", "◉", "∪", "⌒", 
+        "∘", "⌣", "｡", "☼", "◕", "◔", "✧", "✿"
+      ],
+      mouths: [
+        "‿", "_", "o", "O", "ω", "﹏", "△", "∀", "3", "︿", "Д", "皿", 
+        "益", "д", "ε", "з", "v", "▾", "ᗝ", "□", "╯", "~", "3", "ω", 
+        "v", "▽", "∇"
+      ],
+      cheeks: [
+        "///", "｀", "´", "♥", "♡", "✿", "o", "｡", "°", "*", ".", "~", 
+        "ღ", "❁", "✿", "°"
+      ],
+      extras: [
+        "☆", "♥", "♡", "✿", "★", "♪", "♫", "!!", "~", "☆ﾟ.*･｡ﾟ", "ノ", 
+        "(っ˘з(˘⌣˘ )", "!", "?", "^.^", "❀", "✪", "❀", "✦", "✩", "✷", "✸", "✹"
+      ]
     };
-    
-    frag.appendChild(span);
-  }
 
-  bulkDiv.appendChild(frag);
-}
+    // ===================================
+    // DOM Elements
+    // ===================================
+    const elements = {
+      output: document.getElementById('output'),
+      toast: document.getElementById('toast'),
+      singleSymbolMode: document.getElementById('singleSymbolMode'),
+      leftArm: document.getElementById('leftArm'),
+      rightArm: document.getElementById('rightArm'),
+      eyes: document.getElementById('eyes'),
+      mouth: document.getElementById('mouth'),
+      cheeks: document.getElementById('cheeks'),
+      extra: document.getElementById('extra'),
+      bulkCount: document.getElementById('bulkCount'),
+      bulkOutput: document.getElementById('bulkOutput'),
+      surpriseBtn: document.getElementById('surpriseBtn'),
+      copyBtn: document.getElementById('copyBtn'),
+      generateBulkBtn: document.getElementById('generateBulkBtn'),
+      copyAllBtn: document.getElementById('copyAllBtn')
+    };
 
-function copyAllKaomoji(){
-  const all = Array.from(document.getElementById('bulkOutput').children).map(c=>c.textContent).join("\n");
-  if (!all) {
-    showToast('Generate emoticons first!', true);
-    return;
-  }
-  navigator.clipboard.writeText(all)
-    .then(() => showToast('All emoticons copied! ✓'))
-    .catch(() => showToast('Failed to copy', true));
-}
+    // ===================================
+    // Utility Functions
+    // ===================================
+    function getRandom(array) {
+      return array[Math.floor(Math.random() * array.length)];
+    }
 
-/* Populate selects */
-fillSelect("leftArm", leftArms, "");
-fillSelect("rightArm", rightArms, "");
-fillSelect("eyes", eyesList, "");
-fillSelect("mouth", mouths, "");
-fillSelect("cheeks", cheeks, "");
-fillSelect("extra", extras, "");
+    function showToast(message, isError = false) {
+      elements.toast.textContent = message;
+      elements.toast.className = `toast show${isError ? ' error' : ''}`;
+      setTimeout(() => {
+        elements.toast.className = 'toast';
+      }, 2000);
+    }
 
-/* Wire listeners and show default */
-addAutoUpdateListeners();
-updateOutput(false);
-</script>
+    async function copyToClipboard(text) {
+      if (!text) {
+        showToast('Nothing to copy!', true);
+        return false;
+      }
+      
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.error('Failed to copy:', err);
+        return false;
+      }
+    }
+
+    // ===================================
+    // Emoticon Generation
+    // ===================================
+    function generateEmoticonString(useRandom = false) {
+      const singleMode = elements.singleSymbolMode.checked;
+
+      // Single symbol mode - only show extra
+      if (singleMode) {
+        return useRandom 
+          ? getRandom(PARTS.extras) 
+          : (elements.extra.value || "");
+      }
+
+      // Full Emoticon mode
+      const parts = {
+        leftArm: useRandom ? getRandom(PARTS.leftArms) : (elements.leftArm.value || ""),
+        eyes: useRandom ? getRandom(PARTS.eyes) : (elements.eyes.value || ""),
+        mouth: useRandom ? getRandom(PARTS.mouths) : (elements.mouth.value || ""),
+        cheeks: useRandom ? getRandom(PARTS.cheeks) : (elements.cheeks.value || ""),
+        rightArm: useRandom ? getRandom(PARTS.rightArms) : (elements.rightArm.value || ""),
+        extra: useRandom ? getRandom(PARTS.extras) : (elements.extra.value || "")
+      };
+
+      // Build Emoticon: leftArm + eyes + cheeks + mouth + cheeks + eyes + rightArm + extra
+      let Emoticon = "";
+      if (parts.leftArm) Emoticon += parts.leftArm;
+      if (parts.eyes) Emoticon += parts.eyes;
+      if (parts.cheeks) Emoticon += parts.cheeks;
+      if (parts.mouth) Emoticon += parts.mouth;
+      if (parts.cheeks) Emoticon += parts.cheeks;
+      if (parts.eyes) Emoticon += parts.eyes;
+      if (parts.rightArm) Emoticon += parts.rightArm;
+      if (parts.extra) Emoticon += parts.extra;
+
+      return Emoticon;
+    }
+
+    function updateOutput(shouldAnimate = true) {
+      const Emoticon = generateEmoticonString(false);
+      elements.output.textContent = Emoticon;
+
+      if (shouldAnimate) {
+        elements.output.classList.add('pop');
+        setTimeout(() => elements.output.classList.remove('pop'), 120);
+      }
+    }
+
+    // ===================================
+    // Select Population
+    // ===================================
+    function populateSelect(selectElement, options) {
+      selectElement.innerHTML = '';
+
+      // Add "None" option
+      const noneOption = document.createElement('option');
+      noneOption.value = '';
+      noneOption.textContent = 'None';
+      selectElement.appendChild(noneOption);
+
+      // Add all options
+      options.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        selectElement.appendChild(optionElement);
+      });
+    }
+
+    // ===================================
+    // Event Handlers
+    // ===================================
+    function handleSurpriseMe() {
+      const Emoticon = generateEmoticonString(true);
+      elements.output.textContent = Emoticon;
+      elements.output.classList.add('pop');
+      setTimeout(() => elements.output.classList.remove('pop'), 120);
+    }
+
+    async function handleCopy() {
+      const text = elements.output.textContent;
+      const success = await copyToClipboard(text);
+      if (success) {
+        showToast('Copied to clipboard! ✓');
+      } else {
+        showToast('Failed to copy', true);
+      }
+    }
+
+    function handleGenerateBulk() {
+      const count = Math.max(1, Math.min(1000, parseInt(elements.bulkCount.value) || 100));
+      elements.bulkOutput.innerHTML = '';
+
+      const fragment = document.createDocumentFragment();
+
+      for (let i = 0; i < count; i++) {
+        const Emoticon = generateEmoticonString(true);
+        const span = document.createElement('span');
+
+        span.textContent = Emoticon;
+        span.className = 'Emoticon-item';
+        span.tabIndex = 0;
+        span.role = 'button';
+        span.setAttribute('aria-label', `Select emoticon ${Emoticon}`);
+
+        const selectEmoticon = () => {
+          elements.output.textContent = Emoticon;
+          elements.output.classList.add('pop');
+          setTimeout(() => elements.output.classList.remove('pop'), 120);
+          showToast('Selected!');
+        };
+
+        span.addEventListener('click', selectEmoticon);
+        span.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectEmoticon();
+          }
+        });
+
+        fragment.appendChild(span);
+      }
+
+      elements.bulkOutput.appendChild(fragment);
+    }
+
+    async function handleCopyAll() {
+      const items = Array.from(elements.bulkOutput.children);
+      
+      if (items.length === 0) {
+        showToast('Generate emoticons first!', true);
+        return;
+      }
+
+      const allText = items.map(item => item.textContent).join('\n');
+      const success = await copyToClipboard(allText);
+      
+      if (success) {
+        showToast('All emoticons copied! ✓');
+      } else {
+        showToast('Failed to copy', true);
+      }
+    }
+
+    // ===================================
+    // Initialization
+    // ===================================
+    function init() {
+      // Populate all select elements
+      populateSelect(elements.leftArm, PARTS.leftArms);
+      populateSelect(elements.rightArm, PARTS.rightArms);
+      populateSelect(elements.eyes, PARTS.eyes);
+      populateSelect(elements.mouth, PARTS.mouths);
+      populateSelect(elements.cheeks, PARTS.cheeks);
+      populateSelect(elements.extra, PARTS.extras);
+
+      // Add event listeners to selects for auto-update
+      const selectElements = [
+        elements.leftArm,
+        elements.rightArm,
+        elements.eyes,
+        elements.mouth,
+        elements.cheeks,
+        elements.extra
+      ];
+
+      selectElements.forEach(select => {
+        select.addEventListener('change', () => updateOutput(true));
+      });
+
+      // Add event listener for single symbol mode
+      elements.singleSymbolMode.addEventListener('change', () => updateOutput(true));
+
+      // Add button event listeners
+      elements.surpriseBtn.addEventListener('click', handleSurpriseMe);
+      elements.copyBtn.addEventListener('click', handleCopy);
+      elements.generateBulkBtn.addEventListener('click', handleGenerateBulk);
+      elements.copyAllBtn.addEventListener('click', handleCopyAll);
+
+      // Initial render
+      updateOutput(false);
+    }
+
+    // Start the app
+    init();
+  </script>
 </body>
 </html>
