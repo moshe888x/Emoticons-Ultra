@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emoticons Ultra</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f5f5f5;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 48px;
+      font-weight: bold;
+      color: black;
+      margin-bottom: 40px;
+    }
+
+    #controls {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .dropdown-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center; /* Center label above dropdown */
+      gap: 5px;
+    }
+
+    .dropdown-container label {
+      font-weight: bold;
+      text-align: center;
+      font-size: 16px;
+    }
+
+    select {
+      font-size: 16px;
+      padding: 8px;
+    }
+
+    #copy-button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 30px;
+      transition: background 0.2s;
+    }
+
+    #copy-button:hover {
+      background-color: #218838;
+    }
+
+    #preview {
+      background: white;
+      border: 2px solid black;
+      width: 250px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto;
+      overflow: hidden;
+      line-height: 80px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Emoticons Ultra</h1>
+
+  <div id="controls">
+    <div class="dropdown-container">
+      <label for="left-arm">Left Arm</label>
+      <select id="left-arm">
+        <option value="None">None</option>
+        <option value="("> (</option>
+        <option value="["> [</option>
+        <option value="<"><</option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="right-arm">Right Arm</label>
+      <select id="right-arm">
+        <option value="None">None</option>
+        <option value=")"> )</option>
+        <option value="]"> ]</option>
+        <option value=">"> ></option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="eyes">Eyes</label>
+      <select id="eyes">
+        <option value="None">None</option>
+        <option value="^">^</option>
+        <option value="o">o</option>
+        <option value="-">-</option>
+        <option value="x">x</option>
+        <option value=">">></option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="mouth">Mouth</label>
+      <select id="mouth">
+        <option value="None">None</option>
+        <option value="_">_</option>
+        <option value="o">o</option>
+        <option value=".">.</option>
+        <option value="~">~</option>
+        <option value="3">3</option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="cheeks">Cheeks</label>
+      <select id="cheeks">
+        <option value="None">None</option>
+        <option value="*">*</option>
+        <option value=":">:</option>
+        <option value="=">=</option>
+        <option value="+">+</option>
+      </select>
+    </div>
+
+    <div class="dropdown-container">
+      <label for="extra">Extra</label>
+      <select id="extra">
+        <option value="None">None</option>
+        <option value="!">!</option>
+        <option value="?">?</option>
+        <option value="~">~</option>
+        <option value="♡">♡</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="preview"></div>
+  <br />
+  <button id="copy-button">Copy</button>
+
+  <script>
+    const parts = {
+      leftArm: document.getElementById("left-arm"),
+      rightArm: document.getElementById("right-arm"),
+      eyes: document.getElementById("eyes"),
+      mouth: document.getElementById("mouth"),
+      cheeks: document.getElementById("cheeks"),
+      extra: document.getElementById("extra"),
+      preview: document.getElementById("preview"),
+      copy: document.getElementById("copy-button"),
+    };
+
+    function buildEmoticon() {
+      const leftArm = parts.leftArm.value !== "None" ? parts.leftArm.value : "";
+      const rightArm = parts.rightArm.value !== "None" ? parts.rightArm.value : "";
+      const eye = parts.eyes.value !== "None" ? parts.eyes.value : "";
+      const mouth = parts.mouth.value !== "None" ? parts.mouth.value : "";
+      const cheek = parts.cheeks.value !== "None" ? parts.cheeks.value : "";
+      const extra = parts.extra.value !== "None" ? parts.extra.value : "";
+
+      const emoticon =
+        leftArm +
+        (cheek ? cheek : "") +
+        (eye ? eye : "") +
+        (mouth ? mouth : "") +
+        (eye ? eye : "") +
+        (cheek ? cheek : "") +
+        rightArm +
+        extra;
+
+      parts.preview.textContent = emoticon;
+    }
+
+    Object.values(parts).forEach((el) => {
+      if (el.tagName === "SELECT") el.addEventListener("change", buildEmoticon);
+    });
+
+    parts.copy.addEventListener("click", () => {
+      navigator.clipboard.writeText(parts.preview.textContent);
+    });
+
+    buildEmoticon();
+  </script>
+</body>
+</html>
