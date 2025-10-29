@@ -1,202 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Emoticons Ultra</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #f5f5f5;
-      padding: 50px;
-    }
-
-    h1 {
-      font-size: 48px;
-      font-weight: bold;
-      color: black;
-      margin-bottom: 40px;
-    }
-
-    #controls {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 30px;
-    }
-
-    .dropdown-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .dropdown-container label {
-      font-weight: bold;
-      text-align: center;
-      font-size: 16px;
-    }
-
-    select {
-      font-size: 16px;
-      padding: 8px;
-    }
-
-    #copy-button {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 5px;
-      margin-bottom: 30px;
-      transition: background 0.2s;
-    }
-
-    #copy-button:hover {
-      background-color: #218838;
-    }
-
-    #preview {
-      background: white;
-      border: 2px solid black;
-      width: 250px;
-      height: 80px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      margin: 0 auto;
-      overflow: hidden;
-      line-height: 80px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Emoticons Ultra</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f5f5f5;
+  padding: 50px;
+}
+h1 {
+  font-size: 48px;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 40px;
+}
+#controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+.dropdown-container label {
+  font-weight: bold;
+  font-size: 16px;
+}
+select {
+  font-size: 16px;
+  padding: 8px;
+}
+button {
+  font-size: 16px;
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+button:hover {
+  background-color: #ccc;
+}
+#preview {
+  background: white;
+  border: 2px solid black;
+  width: 250px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  margin: 20px auto;
+  line-height: 80px;
+  overflow: hidden;
+}
+#generated {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 20px;
+  background: #fff;
+  border: 2px solid black;
+  padding: 6px;
+}
+.generated-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;        /* smaller height */
+  padding: 0 6px;      /* smaller width padding */
+  font-size: 16px;     /* smaller font */
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  transition: background 0.2s;
+  white-space: nowrap; /* prevent line break */
+}
+.generated-item:hover {
+  background-color: #eee;
+}
+#generate-controls {
+  margin-top: 10px;
+}
+</style>
 </head>
 <body>
-  <h1>Emoticons Ultra</h1>
+<h1>Emoticons Ultra</h1>
 
-  <div id="controls">
-    <div class="dropdown-container">
-      <label for="left-arm">Left Arm</label>
-      <select id="left-arm">
-        <option value="None">None</option>
-        <option>(</option><option>╰(</option><option>(づ</option><option>(っ</option>
-        <option>(ﾉ</option><option>ヽ(</option><option>ʕ</option><option>ヾ</option>
-        <option>ε</option><option>٩(</option><option>(*</option><option>ヽ(</option>
-        <option>(⌒</option><option>╭(</option><option>༼</option><option>ᕦ(</option>
-        <option>ᕤ(</option><option>⊂(</option><option>⊃(</option><option>ლ(</option>
-      </select>
-    </div>
-
-    <div class="dropdown-container">
-      <label for="right-arm">Right Arm</label>
-      <select id="right-arm">
-        <option value="None">None</option>
-        <option>)</option><option>)╯</option><option>づ)</option><option>っ)</option>
-        <option>ﾉ)</option><option>)ヽ</option><option>ʔ</option><option>)ヾ</option>
-        <option>ε)</option><option>٩)</option><option>(*</option><option>)ヽ</option>
-        <option>⌒)</option><option>)╭</option><option>༽</option><option>)ᕦ</option>
-        <option>)ᕤ</option><option>)⊂</option><option>)⊃</option><option>)ლ</option>
-      </select>
-    </div>
-
-    <div class="dropdown-container">
-      <label for="eyes">Eyes</label>
-      <select id="eyes">
-        <option value="None">None</option>
-        <option>☉</option><option>^</option><option>°</option><option>•</option><option>¬</option>
-        <option>ಠ</option><option>´</option><option>x</option><option>X</option><option>T</option>
-        <option>ಥ</option><option>⊙</option><option>♥</option><option>♡</option><option>✿</option>
-        <option>☆</option><option>◕</option><option>o</option><option>u</option><option>◉</option>
-        <option>∪</option><option>⌒</option><option>∘</option><option>⌣</option><option>｡</option>
-        <option>☼</option><option>◔</option><option>✧</option>
-      </select>
-    </div>
-
-    <div class="dropdown-container">
-      <label for="mouth">Mouth</label>
-      <select id="mouth">
-        <option value="None">None</option>
-        <option>‿</option><option>_</option><option>o</option><option>O</option><option>ω</option>
-        <option>﹏</option><option>△</option><option>∀</option><option>3</option><option>︿</option>
-        <option>Д</option><option>皿</option><option>益</option><option>д</option><option>ε</option>
-        <option>з</option><option>v</option><option>▾</option><option>ᗝ</option><option>□</option>
-        <option>~</option><option>▽</option><option>∇</option>
-      </select>
-    </div>
-
-    <div class="dropdown-container">
-      <label for="cheeks">Cheeks</label>
-      <select id="cheeks">
-        <option value="None">None</option>
-        <option>///</option><option>♥</option><option>♡</option><option>✿</option><option>o</option>
-        <option>°</option><option>*</option><option>.</option><option>~</option><option>❁</option>
-      </select>
-    </div>
-
-    <div class="dropdown-container">
-      <label for="extra">Extra</label>
-      <select id="extra">
-        <option value="None">None</option>
-        <option>☆</option><option>♥</option><option>♡</option><option>✿</option><option>★</option>
-        <option>♪</option><option>♫</option><option>!!</option><option>~</option><option>ノ</option>
-        <option>(っ˘з(˘⌣˘ )</option><option>!</option><option>?</option><option>^.^</option>
-        <option>❀</option><option>✪</option><option>✦</option><option>✩</option><option>✷</option>
-        <option>✸</option><option>✹</option>
-      </select>
-    </div>
+<div id="controls">
+  <!-- Dropdowns -->
+  <div class="dropdown-container">
+    <label for="left-arm">Left Arm</label>
+    <select id="left-arm">
+      <option>None</option><option>(</option><option>╰(</option><option>(づ</option><option>(っ</option>
+      <option>(ﾉ</option><option>ヽ(</option><option>ʕ</option><option>ヾ</option><option>ε</option>
+      <option>٩(</option><option>(*</option><option>ヽ(</option><option>(⌒</option><option>╭(</option>
+      <option>༼</option><option>ᕦ(</option><option>ᕤ(</option><option>⊂(</option><option>⊃(</option>
+      <option>ლ(</option>
+    </select>
   </div>
+  <div class="dropdown-container">
+    <label for="right-arm">Right Arm</label>
+    <select id="right-arm">
+      <option>None</option><option>)</option><option>)╯</option><option>づ)</option><option>っ)</option>
+      <option>ﾉ)</option><option>)ヽ</option><option>ʔ</option><option>)ヾ</option><option>ε)</option>
+      <option>٩)</option><option>(*</option><option>)ヽ</option><option>⌒)</option><option>)╭</option>
+      <option>༽</option><option>)ᕦ</option><option>)ᕤ</option><option>)⊂</option><option>)⊃</option>
+      <option>)ლ</option>
+    </select>
+  </div>
+  <div class="dropdown-container">
+    <label for="eyes">Eyes</label>
+    <select id="eyes">
+      <option>None</option>
+      <option>☉</option><option>^</option><option>°</option><option>•</option><option>¬</option>
+      <option>ಠ</option><option>´</option><option>x</option><option>X</option><option>T</option>
+      <option>ಥ</option><option>⊙</option><option>♥</option><option>♡</option><option>✿</option>
+      <option>☆</option><option>◕</option><option>o</option><option>u</option><option>◉</option>
+      <option>∪</option><option>⌒</option><option>∘</option><option>⌣</option><option>｡</option>
+      <option>☼</option><option>◔</option><option>✧</option>
+    </select>
+  </div>
+  <div class="dropdown-container">
+    <label for="mouth">Mouth</label>
+    <select id="mouth">
+      <option>None</option>
+      <option>‿</option><option>_</option><option>o</option><option>O</option><option>ω</option>
+      <option>﹏</option><option>△</option><option>∀</option><option>3</option><option>︿</option>
+      <option>Д</option><option>皿</option><option>益</option><option>д</option><option>ε</option>
+      <option>з</option><option>v</option><option>▾</option><option>ᗝ</option><option>□</option>
+      <option>~</option><option>▽</option><option>∇</option>
+    </select>
+  </div>
+  <div class="dropdown-container">
+    <label for="cheeks">Cheeks</label>
+    <select id="cheeks">
+      <option>None</option><option>///</option><option>♥</option><option>♡</option><option>✿</option>
+      <option>o</option><option>°</option><option>*</option><option>.</option><option>~</option><option>❁</option>
+    </select>
+  </div>
+  <div class="dropdown-container">
+    <label for="extra">Extra</label>
+    <select id="extra">
+      <option>None</option><option>☆</option><option>♥</option><option>♡</option><option>✿</option>
+      <option>★</option><option>♪</option><option>♫</option><option>!!</option><option>~</option>
+      <option>ノ</option><option>(っ˘з(˘⌣˘ )</option><option>!</option><option>?</option><option>^.^</option>
+      <option>❀</option><option>✪</option><option>✦</option><option>✩</option><option>✷</option>
+      <option>✸</option><option>✹</option>
+    </select>
+  </div>
+</div>
 
-  <div id="preview"></div>
-  <br />
-  <button id="copy-button">Copy</button>
+<div>
+  <button id="copy">Copy</button>
+  <button id="surprise">Surprise Me</button>
+  <input type="number" id="generate-count" min="1" value="10" style="width:60px">
+  <button id="generate-many">Generate Many</button>
+  <button id="copy-all">Copy All</button>
+</div>
 
-  <script>
-    const parts = {
-      leftArm: document.getElementById("left-arm"),
-      rightArm: document.getElementById("right-arm"),
-      eyes: document.getElementById("eyes"),
-      mouth: document.getElementById("mouth"),
-      cheeks: document.getElementById("cheeks"),
-      extra: document.getElementById("extra"),
-      preview: document.getElementById("preview"),
-      copy: document.getElementById("copy-button"),
-    };
+<div id="preview"></div>
 
-    function buildEmoticon() {
-      const leftArm = parts.leftArm.value !== "None" ? parts.leftArm.value : "";
-      const rightArm = parts.rightArm.value !== "None" ? parts.rightArm.value : "";
-      const eye = parts.eyes.value !== "None" ? parts.eyes.value : "";
-      const mouth = parts.mouth.value !== "None" ? parts.mouth.value : "";
-      const cheek = parts.cheeks.value !== "None" ? parts.cheeks.value : "";
-      const extra = parts.extra.value !== "None" ? parts.extra.value : "";
+<div id="generated"></div>
 
-      const emoticon =
-        leftArm +
-        (cheek ? cheek : "") +
-        (eye ? eye : "") +
-        (mouth ? mouth : "") +
-        (eye ? eye : "") +
-        (cheek ? cheek : "") +
-        rightArm +
-        extra;
+<script>
+const parts = {
+  leftArm: document.getElementById("left-arm"),
+  rightArm: document.getElementById("right-arm"),
+  eyes: document.getElementById("eyes"),
+  mouth: document.getElementById("mouth"),
+  cheeks: document.getElementById("cheeks"),
+  extra: document.getElementById("extra"),
+  preview: document.getElementById("preview"),
+  generated: document.getElementById("generated")
+};
 
-      parts.preview.textContent = emoticon;
-    }
+function buildEmoticon() {
+  const left = parts.leftArm.value !== "None" ? parts.leftArm.value : "";
+  const right = parts.rightArm.value !== "None" ? parts.rightArm.value : "";
+  const eye = parts.eyes.value !== "None" ? parts.eyes.value : "";
+  const mouth = parts.mouth.value !== "None" ? parts.mouth.value : "";
+  const cheek = parts.cheeks.value !== "None" ? parts.cheeks.value : "";
+  const extra = parts.extra.value !== "None" ? parts.extra.value : "";
+  parts.preview.textContent = left + (cheek?cheek:"") + (eye?eye:"") + (mouth?mouth:"") + (eye?eye:"") + (cheek?cheek:"") + right + extra;
+}
 
-    Object.values(parts).forEach((el) => {
-      if (el.tagName === "SELECT") el.addEventListener("change", buildEmoticon);
-    });
+Object.values(parts).forEach(el=>{
+  if(el.tagName==="SELECT") el.addEventListener("change",buildEmoticon);
+});
 
-    parts.copy.addEventListener("click", () => {
-      navigator.clipboard.writeText(parts.preview.textContent);
-    });
+// Copy current preview
+document.getElementById("copy").addEventListener("click",()=>{
+  navigator.clipboard.writeText(parts.preview.textContent);
+});
 
-    buildEmoticon();
-  </script>
+// Surprise Me
+document.getElementById("surprise").addEventListener("click",()=>{
+  const options = {left:parts.leftArm, right:parts.rightArm, eyes:parts.eyes, mouth:parts.mouth, cheeks:parts.cheeks, extra:parts.extra};
+  for(let key in options){
+    const sel = options[key];
+    const randomIndex = Math.floor(Math.random()*sel.options.length);
+    sel.selectedIndex = randomIndex;
+  }
+  buildEmoticon();
+});
+
+// Generate Many
+document.getElementById("generate-many").addEventListener("click",()=>{
+  const count = parseInt(document.getElementById("generate-count").value);
+  parts.generated.innerHTML = "";
+  for(let i=0;i<count;i++){
+    const clone = buildRandomEmoticon();
+    const div = document.createElement("div");
+    div.className = "generated-item";
+    div.textContent = clone;
+    div.addEventListener("click",()=>{parts.preview.textContent=clone;});
+    parts.generated.appendChild(div);
+  }
+});
+
+// Copy All
+document.getElementById("copy-all").addEventListener("click",()=>{
+  const all = Array.from(parts.generated.children).map(el=>el.textContent).join("\n");
+  navigator.clipboard.writeText(all);
+});
+
+function buildRandomEmoticon(){
+  const left = randomOption(parts.leftArm);
+  const right = randomOption(parts.rightArm);
+  const eye = randomOption(parts.eyes);
+  const mouth = randomOption(parts.mouth);
+  const cheek = randomOption(parts.cheeks);
+  const extra = randomOption(parts.extra);
+  return left + (cheek?cheek:"") + (eye?eye:"") + (mouth?mouth:"") + (eye?eye:"") + (cheek?cheek:"") + right + extra;
+}
+
+function randomOption(select){
+  if(select.options.length===0) return "";
+  const index = Math.floor(Math.random()*(select.options.length));
+  return select.options[index].value;
+}
+
+buildEmoticon();
+</script>
 </body>
 </html>
