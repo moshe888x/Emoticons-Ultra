@@ -78,20 +78,18 @@ button:hover {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 50px;        /* smaller height */
-  padding: 0 6px;      /* smaller width padding */
-  font-size: 16px;     /* smaller font */
+  height: auto;
+  min-height: 40px;
+  padding: 6px 8px;
+  font-size: 16px;
   cursor: pointer;
   border: 1px solid #ddd;
   border-radius: 5px;
   transition: background 0.2s;
-  white-space: nowrap; /* prevent line break */
+  white-space: nowrap;
 }
 .generated-item:hover {
   background-color: #eee;
-}
-#generate-controls {
-  margin-top: 10px;
 }
 </style>
 </head>
@@ -105,7 +103,7 @@ button:hover {
     <select id="left-arm">
       <option>None</option><option>(</option><option>╰(</option><option>(づ</option><option>(っ</option>
       <option>(ﾉ</option><option>ヽ(</option><option>ʕ</option><option>ヾ</option><option>ε</option>
-      <option>٩(</option><option>(*</option><option>ヽ(</option><option>(⌒</option><option>╭(</option>
+      <option>٩(</option><option>(*</option><option>(⌒</option><option>╭(</option>
       <option>༼</option><option>ᕦ(</option><option>ᕤ(</option><option>⊂(</option><option>⊃(</option>
       <option>ლ(</option>
     </select>
@@ -115,7 +113,7 @@ button:hover {
     <select id="right-arm">
       <option>None</option><option>)</option><option>)╯</option><option>づ)</option><option>っ)</option>
       <option>ﾉ)</option><option>)ヽ</option><option>ʔ</option><option>)ヾ</option><option>ε)</option>
-      <option>٩)</option><option>(*</option><option>)ヽ</option><option>⌒)</option><option>)╭</option>
+      <option>٩)</option><option>(*</option><option>⌒)</option><option>)╭</option>
       <option>༽</option><option>)ᕦ</option><option>)ᕤ</option><option>)⊂</option><option>)⊃</option>
       <option>)ლ</option>
     </select>
@@ -171,7 +169,6 @@ button:hover {
 </div>
 
 <div id="preview"></div>
-
 <div id="generated"></div>
 
 <script>
@@ -193,63 +190,72 @@ function buildEmoticon() {
   const mouth = parts.mouth.value !== "None" ? parts.mouth.value : "";
   const cheek = parts.cheeks.value !== "None" ? parts.cheeks.value : "";
   const extra = parts.extra.value !== "None" ? parts.extra.value : "";
-  parts.preview.textContent = left + (cheek?cheek:"") + (eye?eye:"") + (mouth?mouth:"") + (eye?eye:"") + (cheek?cheek:"") + right + extra;
+  parts.preview.textContent = left + cheek + eye + mouth + eye + cheek + right + extra;
 }
 
-Object.values(parts).forEach(el=>{
-  if(el.tagName==="SELECT") el.addEventListener("change",buildEmoticon);
+Object.values(parts).forEach(el => {
+  if (el.tagName === "SELECT") el.addEventListener("change", buildEmoticon);
 });
 
-// Copy current preview
-document.getElementById("copy").addEventListener("click",()=>{
+document.getElementById("copy").addEventListener("click", () => {
   navigator.clipboard.writeText(parts.preview.textContent);
 });
 
-// Surprise Me
-document.getElementById("surprise").addEventListener("click",()=>{
-  const options = {left:parts.leftArm, right:parts.rightArm, eyes:parts.eyes, mouth:parts.mouth, cheeks:parts.cheeks, extra:parts.extra};
-  for(let key in options){
-    const sel = options[key];
-    const randomIndex = Math.floor(Math.random()*sel.options.length);
-    sel.selectedIndex = randomIndex;
-  }
+document.getElementById("surprise").addEventListener("click", () => {
+  const selects = [parts.leftArm, parts.rightArm, parts.eyes, parts.mouth, parts.cheeks, parts.extra];
+  selects.forEach(sel => {
+    const valid = Array.from(sel.options);
+    sel.value = valid[Math.floor(Math.random() * valid.length)].value;
+  });
   buildEmoticon();
 });
 
-// Generate Many
-document.getElementById("generate-many").addEventListener("click",()=>{
+document.getElementById("generate-many").addEventListener("click", () => {
   const count = parseInt(document.getElementById("generate-count").value);
-  parts.generated.innerHTML = "";
-  for(let i=0;i<count;i++){
+  parts.generated.innerHTML = ""; // clear old items
+  for (let i = 0; i < count; i++) {
     const clone = buildRandomEmoticon();
     const div = document.createElement("div");
     div.className = "generated-item";
-    div.textContent = clone;
-    div.addEventListener("click",()=>{parts.preview.textContent=clone;});
+    div.textContent = clone.text;
+    div.addEventListener("click", () => {
+      parts.preview.textContent = clone.text;
+      parts.leftArm.value = clone.parts.left || "None";
+      parts.rightArm.value = clone.parts.right || "None";
+      parts.eyes.value = clone.parts.eye || "None";
+      parts.mouth.value = clone.parts.mouth || "None";
+      parts.cheeks.value = clone.parts.cheek || "None";
+      parts.extra.value = clone.parts.extra || "None";
+    });
     parts.generated.appendChild(div);
   }
 });
 
-// Copy All
-document.getElementById("copy-all").addEventListener("click",()=>{
-  const all = Array.from(parts.generated.children).map(el=>el.textContent).join("\n");
+document.getElementById("copy-all").addEventListener("click", () => {
+  const all = Array.from(parts.generated.children).map(el => el.textContent).join("\n");
   navigator.clipboard.writeText(all);
 });
 
-function buildRandomEmoticon(){
-  const left = randomOption(parts.leftArm);
-  const right = randomOption(parts.rightArm);
-  const eye = randomOption(parts.eyes);
-  const mouth = randomOption(parts.mouth);
-  const cheek = randomOption(parts.cheeks);
-  const extra = randomOption(parts.extra);
-  return left + (cheek?cheek:"") + (eye?eye:"") + (mouth?mouth:"") + (eye?eye:"") + (cheek?cheek:"") + right + extra;
-}
-
-function randomOption(select){
-  if(select.options.length===0) return "";
-  const index = Math.floor(Math.random()*(select.options.length));
-  return select.options[index].value;
+function buildRandomEmoticon() {
+  const pick = s => {
+    const valid = Array.from(s.options);
+    return valid[Math.floor(Math.random() * valid.length)].value;
+  };
+  const left = pick(parts.leftArm);
+  const right = pick(parts.rightArm);
+  const eye = pick(parts.eyes);
+  const mouth = pick(parts.mouth);
+  const cheek = pick(parts.cheeks);
+  const extra = pick(parts.extra);
+  const text = (left !== "None" ? left : "") +
+               (cheek !== "None" ? cheek : "") +
+               (eye !== "None" ? eye : "") +
+               (mouth !== "None" ? mouth : "") +
+               (eye !== "None" ? eye : "") +
+               (cheek !== "None" ? cheek : "") +
+               (right !== "None" ? right : "") +
+               (extra !== "None" ? extra : "");
+  return { text, parts: { left, right, eye, mouth, cheek, extra } };
 }
 
 buildEmoticon();
